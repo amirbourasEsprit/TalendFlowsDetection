@@ -1,0 +1,158 @@
+{% extends "page.html" %}
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+  /* Table actions icons*/
+  table.table td a.view {
+    color: #03A9F4;
+  }
+
+  table.table td a.edit {
+    color: #FFC107;
+  }
+
+  table.table td a.delete {
+    color: #E34724;
+  }
+
+
+  .hint-text {
+    float: left;
+    margin-top: 6px;
+    font-size: 95%;
+  }
+</style>
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Page Heading -->
+  <div class="card shadow mb-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="card-header py-3">
+      <span class="h5 font-weight-bold text-primary">Ajout d'un nouveau frais unitaire à {{supplier_name }}</span>
+
+    </div>
+    <div class="card-body">
+
+      <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <div class="form-row">
+          {{ form.code.label(class="form-control-label") }}
+          {{ form.code(class="form-control",id="chargeSelect") }}
+
+        </div>
+        <div class="form-row">
+          <div class="col-sm">
+
+            {{ form.unit.label(class="form-control-label") }}
+            {{ form.unit(class="form-control",id="unit") }}
+
+
+          </div>
+          <div class="col-sm">
+            {{ form.unitcost.label(class="form-control-label") }}
+            {% if form.unitcost.errors %}
+            {{ form.unitcost(class="form-control is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.unitcost.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.unitcost(class="form-control") }}
+            {% endif %}
+          </div>
+          <div class="col-sm">
+            {{ form.currency.label(class="form-control-label") }}
+            {{ form.currency(class="form-control") }}
+
+          </div>
+        </div>
+        <br>
+
+        <div class="float-right">
+          <a href="{{url_for('supp.view_supplier_charges',supplier_id=supplier_id)}}"
+            class="btn btn-secondary btn-icon-split" type="reset">
+            <span class="icon text-white-50">
+              <i class="fas fa-arrow-left"></i>
+            </span>
+            <span class="text">Retour</span>
+          </a>
+          <a class="btn btn-success btn-icon-split">
+            <span class="icon text-white-50">
+              <i class="fas fa-check"></i>
+            </span>
+            {{ form.submit(class="btn btn-success btn-icon-split") }}
+          </a>
+        </div>
+
+
+      </form>
+
+
+
+
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+  $(document).ready(function () {
+    $("#myInput").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#myTable > tbody > tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+
+  // ON PAGE LOAD FETCH CHARGE AND UPDATE UNIT VALUE
+  let chargeSelect = document.getElementById("chargeSelect")
+  $(document).ready(function () {
+    chargeID = chargeSelect.value;
+    fetch("{{url_for('supp.getChargeDetails',charge_id='')}}" + chargeID).then(function (response) {
+      myUnit = document.getElementById("unit");
+      response.json().then(function (data) {
+        myUnit.value = data.unit;
+      });
+    });
+  });
+
+  // ON SELECT CHANGE UPDATE UNIT VALUE
+  chargeSelect.onchange = function () {
+    chargeID = chargeSelect.value;
+
+    fetch("{{url_for('supp.getChargeDetails',charge_id='')}}" + chargeID).then(function (response) {
+      myUnit = document.getElementById("unit");
+      response.json().then(function (data) {
+        myUnit.value = data.unit;
+      });
+    });
+  }
+</script>
+{% endblock JsAfterTemplate %}

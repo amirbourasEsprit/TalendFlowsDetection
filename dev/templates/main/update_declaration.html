@@ -1,0 +1,699 @@
+{% extends "page.html" %}
+{% set add_form = myDict['add_form'] %}
+{% set update_form = myDict['update_form'] %}
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+
+<style>
+    /* Table actions icons*/
+    table.table td a.view {
+        color: #03A9F4;
+    }
+
+    table.table td a.edit {
+        color: #FFC107;
+    }
+
+    table.table td a.delete {
+        color: #E34724;
+    }
+
+    .toolbar {
+        float: left;
+    }
+</style>
+{% endblock StyleAfterTemplate %}
+
+
+{% block content %}
+<div class="container-fluid">
+
+
+    <div class="card shadow mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="card-header py-2">
+            <div class="d-inline mt-3">
+                <a href="{{url_for('main.listAllDeclarations')}}" class="btn  btn-icon btn-md">
+                    <span class="icon  text-black-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                </a>
+            </div>
+            <div class="d-inline  mt-3">
+                <span class="h5 font-weight-bold text-primary">Mise à jour - Déclaration ID : {{declaration.id}} </span>
+
+            </div>
+            <div style="float:right" class="d-inline mt-1 mr-2">
+                {% if declaration.status == "Brouillon" %}
+                {% set status_color = "badge badge-warning" %}
+                {% elif declaration.status == "Soumise" %}
+                {% set status_color = "badge badge-primary" %}
+                {% elif declaration.status == "Rejetée" %}
+                {% set status_color = "badge badge-warning" %}
+                {% elif declaration.status == "Validée" %}
+                {% set status_color = "badge badge-success" %}
+                {% elif declaration.status == "Facturée" %}
+                {% set status_color = "badge badge-secondary" %}
+                {% elif declaration.status == "Encaissée" %}
+                {% set status_color = "badge badge-dark" %}
+                {% else %}
+                {% set status_color = "error" %}
+                {% endif %}
+                <h5><span class="{{status_color}}">Statut : {{declaration.status}}</span></h5>
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row ml-2 mb-3 mt-1">
+                <div class="col-md-1 mr-3">
+                    <a href="#" class="btn btn-success">
+                        {% if declaration.status == "Brouillon" %}
+                        {% set status_btn = "Soumettre" %}
+                        {% elif declaration.status == "Soumise" %}
+                        {% set status_btn = "Facturer" %}
+                        {% elif declaration.status == "Rejetée" %}
+                        {% set status_btn = "Soumettre" %}
+                        {% else %}
+                        {% set status_btn = "error" %}
+                        {% endif %}
+                        <span class="text">{{status_btn}}</span>
+                    </a>
+                </div>
+                <div class="col-md-1 btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Exporter
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Exporter sous Excel</a>
+                        <a class="dropdown-item" href="#">Exporter sous PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow  mb-4">
+                <a href="#collapseHeader" class="d-block card-header py-3" data-toggle="collapse" role="button"
+                    aria-expanded="true" aria-controls="collapseHeader">
+                    <h6 class="m-0 font-weight-bold text-gray-900">En-tête de la déclaration</h6>
+                </a>
+                <div class="collapse show" id="collapseHeader">
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-xl-4">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless">
+
+                                        <tbody>
+                                            <tr>
+                                                <th>Ref. déclaration</th>
+                                                <td>DEC-{{declaration.id}}</td>
+
+                                            </tr>
+                                            <tr>
+                                                <th>Ref. réclamation</th>
+                                                <td>REC-{{complaint_id}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Date de création</th>
+                                                <td>{{declaration.creationDate.strftime('%d-%m-%Y')}}</td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <th>Statut de la déclaration</th>
+                                                <td>
+                                                    {% if declaration.status == "Brouillon" %}
+                                                    {% set status_color = "badge badge-warning" %}
+                                                    {% elif declaration.status == "Soumise" %}
+                                                    {% set status_color = "badge badge-primary" %}
+                                                    {% elif declaration.status == "Rejetée" %}
+                                                    {% set status_color = "badge badge-warning" %}
+                                                    {% elif declaration.status == "Validée" %}
+                                                    {% set status_color = "badge badge-success" %}
+                                                    {% elif declaration.status == "Facturée" %}
+                                                    {% set status_color = "badge badge-secondary" %}
+                                                    {% elif declaration.status == "Encaissée" %}
+                                                    {% set status_color = "badge badge-dark" %}
+                                                    {% else %}
+                                                    {% set status_color = "error" %}
+                                                    {% endif %}
+                                                    <span class="{{status_color}}">{{declaration.status}}</span>
+
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-xl-2">
+
+                            </div>
+                            <div class="col-xl-5">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless">
+
+                                        <tbody>
+                                            <tr>
+
+                                                <th>Nom du fournisseur</th>
+                                                <td>{{supplier.name}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>Montant total</th>
+                                                <td>{{declaration.totalCost}}</td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <th>Devise</th>
+                                                <td>{{supplier.currency}}</td>
+                                            </tr>
+                                            <tr>
+
+                                                <th>Mode de paiement</th>
+                                                <td class="font-weight-bold"><a href="#" id="modePaiement"
+                                                        data-type="select" data-pk="1" data-url=""
+                                                        data-title="Select currency"></a>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow mb-4">
+                <a href="#collapseCosts" class="d-block card-header py-3" data-toggle="collapse" role="button"
+                    aria-expanded="true" aria-controls="collapseCosts">
+                    <h6 class="m-0 font-weight-bold text-gray-900">Lignes de coûts</h6>
+                </a>
+                <div class="collapse show" id="collapseCosts">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-4 col-md-5 col-lg-8">
+                                <div id="dataTable_filter" class="dataTables_filter">
+                                    <label>Rechercher:<input id="myInput" type="text"
+                                            class="form-control form-control-sm " placeholder=""
+                                            aria-controls="dataTable"></label>
+                                </div>
+                            </div>
+                            <div class="col-sm-8 col-md-6 col-lg-4 mt-sm-3 mt-md-3 mt-lg-3">
+
+                                <div class="float-right">
+                                    <a href="" class="btn btn-success btn" onclick="initAddModal();"
+                                    id="addBtn" data-toggle="modal"
+                                    data-target="#addModal"><i style="float: left;"
+                                            class="material-icons mr-2">&#xE147;</i> <span>Ajouter une ligne</span></a>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover row-border" name="myTable" id="myTable"
+                                    width="100%" class="display">
+                                    <thead class="text-primary" style="font-size: 12px;">
+                                        <th>Code Frais</th>
+                                        <th>Description</th>
+                                        <th>Quantité</th>
+                                        <th>Unité</th>
+                                        <th>Prix Unitaire</th>
+                                        <th>Coefficient</th>
+                                        <th>Autre Coût</th>
+                                        <th>Montant</th>
+                                        <th>Commentaire</th>
+                                        <th>Actions</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for charge,cost in costs %}
+                                        <tr>
+                                            <td>{{charge.code}}</td>
+                                            <td>{{charge.description}}</td>
+                                            <td>{{cost.hoursNumber}}</td>
+                                            <td>{{charge.unit}}</td>
+                                            <td>{{cost.unitcost}}</td>
+                                            <td>{{cost.coefficient}}</td>
+                                            <td>{{cost.othercost}}</td>
+                                            <td>{{cost.lineCost}}</td>
+                                            <td>{{cost.lineComment}}</td>
+                                            <td style="white-space: nowrap;">
+                                                <a href="" class="edit" onclick="initModal('{{ cost.id | tojson }}');"
+                                                    id="updateBtn" data-toggle="modal"
+                                                    data-target="#updateModal-{{ cost.id }}"><i
+                                                        class="material-icons">&#xE254;</i></a>
+                                                <a href="" class="delete" data-toggle="modal"
+                                                    data-target="#deleteModal-{{ cost.id }}"><i
+                                                        class="material-icons">&#xE872;</i></a>
+                                                <!-- Delete Cost Line Modal -->
+                                                <div class="modal fade" id="deleteModal-{{ cost.id }}" tabindex="-1"
+                                                    role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="deleteModalLabel">Voulez
+                                                                    vous
+                                                                    supprimer cette ligne?</h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">Annuler</button>
+                                                                <form
+                                                                    action="{{ url_for('main.delete_cost_line', line_id=cost.id, declaration_id=declaration.id) }}"
+                                                                    method="POST">
+                                                                    <input class="btn btn-danger" type="submit"
+                                                                        value="Supprimer">
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Update Cost Line Modal -->
+                                                <div class="modal fade" id="updateModal-{{ cost.id }}" tabindex="-1"
+                                                    role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="updateModalLabel">
+                                                                    Modification d'une ligne de coût</h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <form id="updateCostForm-{{ cost.id }}" method="POST">
+                                                                {{ update_form.hidden_tag() }}
+                                                                {{ update_form.identifier(hidden=True, value=cost.id,id="update_id-"~cost.id) }}
+                                                                <div class="modal-body">
+                                                                    <fieldset>
+                                                                        <div class="form-row">
+                                                                            <div class="col-md-6">
+                                                                                {{ update_form.code.label(class="form-control-label") }}
+                                                                                {{ update_form.code(class="form-control",id="update_supplierCost-"~cost.id) }}
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                {{ update_form.unit.label(class="form-control-label") }}
+                                                                                {{ update_form.unit(class="form-control",id="update_unit-"~cost.id) }}
+
+
+                                                                            </div>
+                                                                            <div class="col-md-3">
+                                                                                {{ update_form.unitcost.label(class="form-control-label") }}
+                                                                                {% if update_form.unitcost.errors %}
+                                                                                {{ update_form.unitcost(class="form-control is-invalid") }}
+                                                                                <div class="invalid-feedback">
+                                                                                    {% for error in update_form.unitcost.errors %}
+                                                                                    <span>{{ error }}</span>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                                {% else %}
+                                                                                <div class="input-group">
+                                                                                    {{ update_form.unitcost(class="form-control",type="number",id="update_unitCost-"~cost.id) }}
+                                                                                    <div class="input-group-prepend">
+                                                                                        <span
+                                                                                            class="input-group-text suppCurrency"
+                                                                                            id=""></span>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {% endif %}
+
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-row mt-1">
+                                                                            <div class="col-md-3">
+
+                                                                                {{ update_form.quantity.label(class="form-control-label") }}
+                                                                                {% if update_form.quantity.errors %}
+                                                                                {{ update_form.quantity(class="form-control is-invalid") }}
+                                                                                <div class="invalid-feedback">
+                                                                                    {% for error in update_form.quantity.errors %}
+                                                                                    <span>{{ error }}</span>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                                {% else %}
+                                                                                {{ update_form.quantity(class="form-control",type="number",id="update_quantity-"~cost.id)  }}
+                                                                                {% endif %}
+
+                                                                            </div>
+                                                                            <div class="col-md-3">
+                                                                                {{ update_form.othercost.label(class="form-control-label") }}
+                                                                                {% if update_form.othercost.errors %}
+                                                                                {{ update_form.othercost(class="form-control is-invalid") }}
+                                                                                <div class="invalid-feedback">
+                                                                                    {% for error in update_form.othercost.errors %}
+                                                                                    <span>{{ error }}</span>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                                {% else %}
+                                                                                <div class="input-group">
+
+                                                                                    {{ update_form.othercost(class="form-control",type="number",id="update_othercost-"~cost.id)  }}
+                                                                                    <div class="input-group-prepend">
+                                                                                        <span
+                                                                                            class="input-group-text suppCurrency"
+                                                                                            id=""></span>
+                                                                                    </div>
+                                                                                </div>
+                                                                                {% endif %}
+
+                                                                            </div>
+                                                                            <div class="col-md-2">
+                                                                                {{ update_form.coefficient.label(class="form-control-label") }}
+                                                                                {% if update_form.coefficient.errors %}
+                                                                                {{ update_form.coefficient(class="form-control is-invalid") }}
+                                                                                <div class="invalid-feedback">
+                                                                                    {% for error in update_form.coefficient.errors %}
+                                                                                    <span>{{ error }}</span>
+                                                                                    {% endfor %}
+                                                                                </div>
+                                                                                {% else %}
+                                                                                {{ update_form.coefficient(class="form-control",type="number",id="update_coefficient-"~cost.id)  }}
+                                                                                {% endif %}
+
+
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-row mt-1 col-md-10">
+                                                                            {{ update_form.comment.label(class="form-control-label") }}
+                                                                            {% if update_form.comment.errors %}
+                                                                            {{ update_form.comment(class="form-control is-invalid") }}
+                                                                            <div class="invalid-feedback">
+                                                                                {% for error in update_form.comment.errors %}
+                                                                                <span>{{ error }}</span>
+                                                                                {% endfor %}
+                                                                            </div>
+                                                                            {% else %}
+                                                                            {{ update_form.comment(class="form-control",id="update_comment-"~cost.id,rows="1") }}
+                                                                            {% endif %}
+                                                                        </div>
+                                                                    </fieldset>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-dismiss="modal">Annuler</button>
+                                                                    {{ update_form.submitupdate(class="btn btn-success",id="submitupdate-"~cost.id )}}
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add New Cost Line Modal -->
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addModalLabel">Ajout d'une nouvelle ligne de coût</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form id="addCostForm" method="POST">
+                                {{ add_form.hidden_tag() }}
+                                <div class="modal-body">
+                                    <fieldset>
+                                        <div class="form-row">
+                                            <div class="col-md-6">
+                                                {{ add_form.code.label(class="form-control-label") }}
+                                                {% if add_form.code.errors %}
+                                                {{ add_form.code(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in add_form.code.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %}
+                                                {{ add_form.code(class="form-control",id="supplierCostSelect") }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-2">
+                                                {{ add_form.unit.label(class="form-control-label") }}
+                                                {% if add_form.unit.errors %}
+                                                {{ add_form.unit(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in add_form.unit.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %}
+                                                {{ add_form.unit(class="form-control",id="unit") }}
+                                                {% endif %}
+
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{ add_form.unitcost.label(class="form-control-label") }}
+                                                {% if add_form.unitcost.errors %}
+                                                {{ add_form.unitcost(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in add_form.unitcost.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %}
+                                                <div class="input-group">
+                                                    {{ add_form.unitcost(class="form-control",id="unitCost",type="number") }}
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text suppCurrency" id=""></span>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                        <div class="form-row mt-1">
+                                            <div class="col-md-3">
+
+                                                {{ add_form.quantity.label(class="form-control-label") }}
+                                                {% if add_form.quantity.errors %}
+                                                {{ add_form.quantity(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in add_form.quantity.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %}
+                                                {{ add_form.quantity(class="form-control",id="quantity",type="number") }}
+                                                {% endif %}
+
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{ add_form.othercost.label(class="form-control-label") }}
+                                                {% if add_form.othercost.errors %}
+                                                {{ add_form.othercost(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in add_form.othercost.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %}
+                                                <div class="input-group">
+
+                                                    {{ add_form.othercost(class="form-control",id="othercost",type="number") }}
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text suppCurrency" id=""></span>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+
+                                            </div>
+                                            <div class="col-md-2">
+                                                {{ add_form.coefficient.label(class="form-control-label") }}
+                                                {% if add_form.coefficient.errors %}
+                                                {{ add_form.coefficient(class="form-control is-invalid") }}
+                                                <div class="invalid-feedback">
+                                                    {% for error in add_form.coefficient.errors %}
+                                                    <span>{{ error }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                                {% else %}
+                                                {{ add_form.coefficient(class="form-control",id="coefficient",type="number") }}
+                                                {% endif %}
+
+
+                                            </div>
+
+                                        </div>
+                                        <div class="form-row mt-1 col-md-10">
+                                            {{ add_form.comment.label(class="form-control-label") }}
+                                            {% if add_form.comment.errors %}
+                                            {{ add_form.comment(class="form-control is-invalid") }}
+                                            <div class="invalid-feedback">
+                                                {% for error in add_form.comment.errors %}
+                                                <span>{{ error }}</span>
+                                                {% endfor %}
+                                            </div>
+                                            {% else %}
+                                            {{ add_form.comment(class="form-control",id="comment",rows="1") }}
+                                            {% endif %}
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Annuler</button>
+                                    {{ add_form.submitadd(class="btn btn-success")}}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+    <!-- Page level plugins -->
+    <script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#myTable').DataTable({
+                "lengthMenu": -1,
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                "searching": false
+            });
+        });
+
+        // addModal Button Handler
+        function initAddModal() {
+            // clearing modal form
+            addModalForm = document.getElementById("addCostForm")
+            addModalForm.reset();
+            var selection = document.getElementById("supplierCostSelect");
+            selection.innerHTML = "";
+            //
+            var unitCostField = document.getElementById("unitCost");
+            var unitField = document.getElementById("unit");
+            var currencyFields = document.getElementsByClassName("suppCurrency")
+            // fetching supplier costs
+            fetch("{{url_for('main.getSupplierData',supplier_id=supplier.id)}}")
+                .then(function (response) {
+
+                    response.json().then(function (data) {
+                        supplierCosts = data.costs;
+                        // creating selection list from fetched data
+                        for (var i = 0; i < supplierCosts
+                            .length; i++) {
+                            var opt = document.createElement(
+                                'option');
+                            opt.value = supplierCosts[i].suppcostid;
+                            opt.innerHTML = supplierCosts[i].code +
+                                '-' + supplierCosts[i].description;
+                            selection.appendChild(opt);
+                        }
+                        // inserting initial cost
+                        for (var i = 0; i < currencyFields
+                            .length; i++) {
+                            currencyFields[i].innerHTML = data
+                                .currency;
+                        }
+
+
+                        selectedID = selection.selectedIndex;
+                        unitCostField.value = supplierCosts[
+                                selectedID]
+                            .unitcost;
+                        unitField.value = supplierCosts[selectedID]
+                            .unit;
+
+                        // on select change event handler
+                        selection.onchange = function () {
+                            selectedID = selection
+                                .selectedIndex;
+                            unitCostField.value = supplierCosts[
+                                selectedID].unitcost;
+                            unitField.value = supplierCosts[
+                                selectedID].unit;
+
+                        }
+
+                    });
+
+                });
+
+        }
+
+
+        // search Table 
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable > tbody > tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+
+        // updateModal populate form with data 
+        function initModal(costID) {
+            var fetchURL = "/getdata/costline/" + costID;
+            fetch(fetchURL)
+                .then(function (response) {
+                    response.json().then(function (data) {
+                        var codeField = document.getElementById("update_supplierCost-" + costID);
+                        var unitField = document.getElementById("update_unit-" + costID);
+                        var unitCostField = document.getElementById("update_unitCost-" + costID);
+                        var quantityField = document.getElementById("update_quantity-" + costID);
+                        var coefficientField = document.getElementById("update_coefficient-" + costID);
+                        var commentField = document.getElementById("update_comment-" + costID);
+                        var othercostField = document.getElementById("update_othercost-" + costID + "");
+                        codeField.value = data.code + '-' + data.description;
+                        unitField.value = data.unit;
+                        unitCostField.value = data.unitcost;
+                        coefficientField.value = data.coefficient;
+                        quantityField.value = data.quantity;
+                        othercostField.value = data.othercost;
+                        commentField.value = data.comment;
+                        var currencyFields = document.getElementsByClassName("suppCurrency")
+                        for (var i = 0; i < currencyFields
+                            .length; i++) {
+                            currencyFields[i].innerHTML = data.currency;
+                        }
+
+                    });
+                });
+
+        }
+    </script>
+{% endblock JsAfterTemplate %}

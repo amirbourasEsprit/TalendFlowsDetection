@@ -1,0 +1,132 @@
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center">
+        <div class="sidebar-brand-image">
+          <div class="col-lg-7 col-md-5 xs-margin-30px-bottom ">            
+            <!--<img src="{{ url_for('static', filename='img/cofat.png') }}" style="width:80px;" alt="">-->
+            <span style="font-size: larger ;">DataRaise</span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Divider -->
+      <hr class="sidebar-divider my-0">
+
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin.index') }}">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Tableau de bord</span></a>
+      </li> 
+
+      <!-- Nav Item - Pages Collapse Menu -->
+     
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          <i class="fas fa-fw fa-users-cog"></i>
+          <span>{{ gettext("Predicate") }}</span>
+        </a>
+        <div id="collapseOne" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar" aria-expanded="false">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">{{ gettext("Administration du système") }}</h6>
+            <a class="collapse-item" href="{{ url_for('admin.predicateAmirAnis') }}">{{ gettext("Predicate Amir Anis") }}</a>
+            <a class="collapse-item" href="{{ url_for('admin.predicatefiras') }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ gettext("Predicate firas") }}</a>
+            <a class="collapse-item" href="{{ url_for('admin.predicatechadhaArij') }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ gettext("Predicate chadha arij") }}</a>
+            
+          </div>
+        </div>
+      </li>
+      {% if 'super_admin' in roles %}
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fas fa-fw fa-users-cog"></i>
+          <span>{{ gettext("Administration") }}</span>
+        </a>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar" aria-expanded="false">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">{{ gettext("Administration du système") }}</h6>
+            <a class="collapse-item" href="{{ url_for('admin.company') }}">{{ gettext("organisations") }}</a>
+            <a class="collapse-item" href="{{ url_for('admin.access_user') }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ gettext("utilisateurs") }}</a>
+            <a class="collapse-item" href="{{ url_for('admin.setting') }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ gettext("paramètres") }}</a>
+            <a class="collapse-item" href="{{ url_for('admin.import_data') }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ gettext("Imports") }}</a>
+          </div>
+        </div>
+      </li>
+      
+      {% endif %}
+
+      <!-- Nav Item - Utilities Collapse Menu -->
+      {% if 'super_admin' in roles %}
+      {% if current_user.type == 'sysuser' %}
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+          <i class="fas fa-fw fa-truck-loading"></i>
+          <span>Fournisseurs</span>
+        </a>
+        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">{{ gettext("Gestion des fournisseurs") }}</h6>
+            {% if 'super_admin' in roles or 'supplier_level1' in roles or 'supplier_level2' in roles %}
+            <a class="collapse-item" href="{{ url_for('supp.supplier') }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ gettext("listes des fournisseurs") }}</a>
+            {% endif %}
+            {% if 'super_admin' in roles %}
+            <a class="collapse-item" href="{{ url_for('supp.certificate') }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ gettext("listes des certificats") }}</a>
+            <a class="collapse-item" href="{{ url_for('supp.qualitymanual') }}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ gettext("listes des manuels qualité") }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </li>
+      {% elif current_user.type == 'suppuser' %}
+        {% if 'supplier_level1' in roles or 'supplier_level2' in roles %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('supp.supplier_profile', supplier_id=current_user.supplier_id) }}">
+            <i class="fas fa-fw fa-truck-loading"></i>
+            <span>Mon fournisseur</span></a>
+        </li>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  
+      <!-- Nav Item - Tables -->
+      {% if 'super_admin' in roles or 'complaint_level1' in roles or 'complaint_level2' in roles %}
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+          <i class="fas fa-fw fa-clipboard-check"></i>
+          <span>Qualité</span>
+        </a>
+        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <h6 class="collapse-header">Gestion de qualité:</h6>
+              <a class="collapse-item" href="{{ url_for('comp.complaint') }}">{{ gettext("Réclamations") }}</a>
+              <a class="collapse-item" href="{{ url_for('comp.list_report8D') }}">{{ gettext("Rapports 8D") }}</a>
+          </div>
+        </div>
+      </li>
+      {% endif %}
+      
+      <!-- Nav Item - Dashboard -->
+      {% if 'super_admin' in roles or 'cost_level1' in roles or 'cost_level2' in roles %}
+        {% if current_user.type=='sysuser' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('cost.view_declarations') }}">
+            <i class="fas fa-fw fa-money-check-alt"></i>
+            <span>Déclarations des coûts</span></a>
+        </li>
+        {% elif current_user.type=='suppuser' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('cost.view_supplier_declarations') }}">
+            <i class="fas fa-fw fa-money-check-alt"></i>
+            <span>Déclarations des coûts</span></a>
+        </li>
+        {% endif %}
+      {% endif %}
+
+      <!-- Divider -->
+      <hr class="sidebar-divider d-none d-md-block">
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>

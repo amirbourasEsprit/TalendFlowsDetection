@@ -1,0 +1,540 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+{% set f2 = myDict['f2'] %} 
+
+{% block StyleAfterTemplate %}
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link href="css/sb-admin-2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <style>
+      
+      .emp-profile {
+            padding: 3%;
+            margin-top: 3%;
+            margin-bottom: 3%;
+            border-radius: 0.5rem;
+            background: #fff;
+        }
+
+        .profile-img {
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .profile-img .file {
+            position: relative;
+            overflow: hidden;
+            margin-top: -20%;
+            width: 70%;
+            border: none;
+            border-radius: 0;
+            font-size: 15px;
+            background: #212529b8;
+        }
+
+        .profile-img .file input {
+            position: absolute;
+            opacity: 0;
+            right: 0;
+            top: 0;
+        }
+
+        .profile-head h5 {
+            color: #333;
+        }
+
+        table.table td a.edit {
+          color: #FFC107;
+      }
+
+      table.table td a.delete {
+          color: #E34724;
+      }
+        .profile-head h6 {
+            color: #0062cc;
+        }
+
+        .profile-edit-btn {
+            border: none;
+            border-radius: 1.5rem;
+            width: 70%;
+            padding: 2%;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+        }
+
+        .proile-rating {
+            font-size: 12px;
+            color: #818182;
+            margin-top: 5%;
+        }
+
+        .proile-rating span {
+            color: #495057;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .profile-head .nav-tabs {
+            margin-bottom: 5%;
+        }
+
+        .profile-head .nav-tabs .nav-link {
+            font-weight: 600;
+            border: none;
+        }
+
+        .profile-head .nav-tabs .nav-link.active {
+            border: none;
+            border-bottom: 2px solid #0062cc;
+        }
+
+        .profile-work {
+            padding: 14%;
+            margin-top: -15%;
+        }
+
+        .profile-work p {
+            font-size: 12px;
+            color: #818182;
+            font-weight: 600;
+            margin-top: 10%;
+        }
+
+        .profile-work a {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-work ul {
+            list-style: none;
+        }
+
+        .profile-tab label {
+            font-weight: 600;
+        }
+
+        .profile-tab p {
+            font-weight: 600;
+            color: #0062cc;
+        }
+  </style>
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+    <div class="container-fluid">
+
+      <!-- Basic Card Example -->
+      {% if current_user.type=="sysuser" %}
+      <div class="row">
+        <a class="btn btn-primary" href="{{ url_for('supp.supplier') }}" role="button">Tous les Fournisseurs</a>
+      </div>
+      {% endif %}
+      <p></p>
+      <div class="card shadow mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">×</span>
+                </button>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+      <div class="container emp-profile">
+ 
+        <form method="post">
+          <div class="row">
+           
+            <div class="col-md-4">
+              <div class="profile-img">
+                {% if not supplier.logo %}
+                  <img class="img-responsive" style="width:50%;" src="https://via.placeholder.com/150">
+                {% else %}
+                  <img class="img-responsive" style="width:50%;" src="{{ url_for('static', filename='/'.join(['img', 'SupplierLogo', supplier.logo ])) }}">
+                {% endif %}
+                <br>
+                {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                <br>                
+                <div class="text-center">
+                  <a href="" class="btn btn-primary" data-toggle="modal" data-target="#logoModal">Modifier logo</a>
+                </div> 
+                {% endif %}               
+              </div>              
+            </div>
+            <div class="col-md-6">
+              <div class="profile-head">
+                <h3>{{ supplier.name }}</h3>
+                <h6><b>{{ category.name }}</b></h6>
+                <p>{{ supplier.currency }}</p>
+                <ul class="nav nav-tabs"></ul>
+              </div>
+            </div>
+            {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+            <div class="col-md-2">              
+              <a class="profile-edit-btn" href="{{ url_for('supp.update_supplierprofile', supplier_id=supplier.id)}}" role="button">Edit Profile</a>
+            </div>
+            {% elif current_user.type=="sysuser" and ('supplier_level2' in roles or 'super_admin' in roles) %}
+            <div class="col-md-2">              
+              <a class="profile-edit-btn" href="{{ url_for('supp.update_supplierprofile2', supplier_id=supplier.id)}}" role="button">Edit Profile</a>
+            </div>
+            {% endif %}
+          </div>
+          <p></p>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="visavis-tab" data-toggle="pill" href="#visavis" role="tab" aria-controls="v-pills-visavis" aria-selected="true">Vis à Vis</a>
+                <a class="nav-link" id="jalon-tab" data-toggle="pill" href="#jalon" role="tab" aria-controls="v-pills-Jalon" aria-selected="false">Jalon</a>
+                <a class="nav-link" id="Reponse-tab" data-toggle="pill" href="#Reponse" role="tab" aria-controls="v-pills-Reponse" aria-selected="false">Reponse</a>
+                <a class="nav-link" id="v-pills-Certificats-tab" data-toggle="pill" href="#Certificats" role="tab" aria-controls="v-pills-Certificats" aria-selected="false">Certificats</a>
+                <a class="nav-link" id="v-pills-Qualitymanual-tab" data-toggle="pill" href="#Qualitymanual" role="tab" aria-controls="v-pills-Qualitymanual" aria-selected="false">Manuel Qualité</a>
+                <a class="nav-link" id="v-pills-Contact-tab" data-toggle="pill" href="#Contact" role="tab" aria-controls="v-pills-Contact" aria-selected="false">Contact</a>
+                {% if current_user.type=="sysuser" and 'supplier_level2' in roles %}
+                  <div class="text-center">
+                    <a href="{{ url_for('supp.view_supplier_charges', supplier_id=supplier.id) }}" class="btn btn-light">Gérer les frais</a>
+                  </div> 
+                {% else %}
+                  <div class="text-center">
+                    <a href="{{ url_for('supp.view_supplier_charges', supplier_id=supplier.id) }}" class="btn btn-light">Consulter les frais</a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="tab-content profile-tab" id="myTabContent">
+                    <div class="tab-pane fade show active" id="visavis" role="tabpanel" aria-labelledby="visavis-tab">
+                      {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}   
+                      <div class="row">
+                          <div class="col-md-12" >
+                            <a href="{{ url_for('supp.edit_visavis', supplier_id=supplier.id) }}" class="btn btn-success btn float-right">
+                              <span class="icon text-white-50">
+                                <i style="float: left;" class="material-icons mr-2">&#xE254;</i>
+                              </span>
+                              <span class="text">Éditer les vis à vis</span>
+                            </a>
+                          </div>
+                      </div> 
+                      {% endif %}
+                      <p></p>
+                      <div class="row">
+                       
+                        <div class="col-md-6">
+                          <label>Certifications</label>
+                          
+                        </div>
+                        
+                        <div class="col-md-6">
+                          
+                          {% for v in visavis %}
+                            {% if doc_name(v.doctype_id)=='certification' %}                         
+                              <p>{{ user_name(v.user_id).firstName }} {{ user_name(v.user_id).lastName }}</p>
+                            {% endif %}
+                          {% endfor %}
+                          <ul class="nav nav-tabs"></ul>
+                          <ul class="nav nav-tabs"></ul>
+                       
+
+                        </div>
+                        
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>Manuel qualité</label>
+                        </div>
+                        <div class="col-md-6">
+                          {% for v in visavis %}
+                            {% if doc_name(v.doctype_id)=='qualitymanual' %}                         
+                              <p>{{ user_name(v.user_id).firstName }} {{ user_name(v.user_id).lastName }}</p>
+                            {% endif %}
+                          {% endfor %}
+                          <ul class="nav nav-tabs"></ul>
+                          <ul class="nav nav-tabs"></ul>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>Réclamation</label>
+                        </div>
+                        <div class="col-md-6">
+                          {% for v in visavis %}
+                            {% if doc_name(v.doctype_id)=='complaint' %}                         
+                              <p>{{ user_name(v.user_id).firstName }} {{ user_name(v.user_id).lastName }}</p>
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="Contact" role="tabpanel" aria-labelledby="Contact-tab">
+                      {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                      <div class="row">
+                        <div class="col-md-12" >
+                          <a href="{{ url_for('supp.add_suppContact', supplier_id=supplier.id) }}" class="btn btn-success btn float-right">
+                            <span class="icon text-white-50">
+                              <i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+                            </span>
+                            <span class="text">Ajouter un contact</span>
+                          </a>
+                        </div>
+                      </div> 
+                    {% endif %}
+                    <p></p>
+                      <div class="row">
+                        <table class="table table-hover " id="myTable">
+                          <thead class="thead-light">
+                            <tr>
+                              <th scope="col">Nom Complet</th>
+                              <th scope="col">Fonction</th>                              
+                              <th scope="col">Téléphone</th>
+                              {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                              <th scope="col">Action</th>
+                              {% endif %}
+                            </tr>
+                          </thead>
+                          <tbody id="myTable">
+                            {% for contact in contacts %}
+                            <tr>
+                              <td>{{ contact.lastName }} {{ contact.firstName }}</td>
+                              <td>{{ contact.function }}</td>                              
+                              <td>{{ contact.phone }} </td>
+                              {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                              <td>
+                                <a href="{{ url_for('supp.update_suppContact', contact_id=contact.id ,supplier_id=supplier.id)}}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                                <a href="" class="delete" data-toggle="modal" data-target="#deleteModal-{{ contact.id }}"><i class="material-icons">&#xE872;</i></a>
+                                  <!-- Modal -->
+                                   <div class="modal fade" id="deleteModal-{{ contact.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                       <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="deleteModalLabel">Voulez vous supprimer ce contact?</h5>
+                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                  <span aria-hidden="true">&times;</span>
+                                               </button>
+                                         </div>
+                                      <div class="modal-footer">
+                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                           <form action="{{ url_for('supp.delete_suppContact', contact_id=contact.id ,supplier_id=supplier.id) }}" method="POST">
+                                               <input class="btn btn-danger" type="submit" value="Supprimer">
+                                           </form>
+                                      </div>
+                                   </div>
+                                  </div>
+                                 </div>
+                              </td>
+                              {% endif %}
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="Certificats" role="tabpanel" aria-labelledby="Certificats-tab">
+                      {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                      <div class="row">
+                          <div class="col-md-12" >
+                            <a href="{{ url_for('supp.add_certificate', supplier_id=supplier.id) }}" class="btn btn-success btn float-right">
+                              <span class="icon text-white-50">
+                                <i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+                              </span>
+                              <span class="text">Ajouter une Certificat</span>
+                            </a>
+                          </div>
+                      </div> 
+                      {% endif %}
+                      <div class="row">
+                        <p></p>
+                      </div>
+                      <div class="row">
+                        <table class="table table-hover " id="myTable">
+                          <thead class="thead-light">
+                            <tr>
+                              <th scope="col">Nom Certificat</th>
+                              <th scope="col">Date expiration</th>
+                              <th scope="col">Status</th>
+                              {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                              <th scope="col">Action</th>
+                              {% endif %}
+                            </tr>
+                          </thead>
+                          <tbody id="myTable">
+                            {% for certificat in certificats %}
+                            <tr>
+                              <td>{{ certificat.name }}</td>
+                              <td>{{ certificat.expirationDate.strftime('%Y-%m-%d') }}</td>
+                              <td>{{ certificat.status }} </td>
+                              {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                              <td>
+                                <a href="{{ url_for('supp.update_certificate',certificat_id=certificat.id ,supplier_id=supplier.id) }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                              </td>
+                              {% endif %}
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>        
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="Qualitymanual" role="tabpanel" aria-labelledby="Qualitymanual-tab">
+                      {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                      <div class="row">
+                          <div class="col-md-12" >
+                            <a href="{{ url_for('supp.add_qualitymanual', supplier_id=supplier.id) }}" class="btn btn-success btn float-right">
+                              <span class="icon text-white-50">
+                                <i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+                              </span>
+                              <span class="text">Ajouter un manuel de qualité</span>
+                            </a>
+                          </div>
+                      </div> 
+                      {% endif %}
+                      <div class="row">
+                        <p></p>
+                      </div>
+                      <div class="row">
+                        <table class="table table-hover " id="myTable">
+                          <thead class="thead-light">
+                            <tr>
+                              <th scope="col">Nom manuel qualité</th>
+                              <th scope="col">Status</th>
+                              <th scope="col">Attachement</th>
+                              {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                              <th scope="col">Action</th>
+                              {% endif %}
+                            </tr>
+                          </thead>
+                          <tbody id="myTable">
+                            {% for qualitymanual in qualitymanuals %}
+                            <tr>
+                              <td>{{ qualitymanual.name }}</td>
+                              <td> {{ qualitymanual.status }} </td>
+                              <td>
+                                <a href="{{ url_for('supp.consult_qualitymanual', qualitymanual_id=qualitymanual.id) }}" target="_blank" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                              </td>
+                               {% if current_user.type=="suppuser" and 'supplier_level2' in roles %}
+                              <td>
+                              <a href=# class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                              </td>                                                           
+                              {% endif %}
+                            </tr>                                               
+                            {% endfor %}
+                          </tbody>
+                        </table>        
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="jalon" role="tabpanel" aria-labelledby="jalon-tab">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>Jalon Plan 3D</label>
+                        </div>
+                        <div class="col-md-6">
+                          <p>{{ supplier.jalan3D }} Jours</p>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>Jalon Plan 5D</label>
+                        </div>
+                        <div class="col-md-6">
+                          <p>{{ supplier.jalan5D }} Jours</p>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>Jalon Plan 8D</label>
+                        </div>
+                        <div class="col-md-6">
+                          <p>{{ supplier.jalan8D }} Jours</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="Reponse" role="tabpanel" aria-labelledby="Reponse-tab">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>Date de réponse initiale</label>
+                        </div>
+                        <div class="col-md-6">
+                          <p>{{ supplier.initialResponse }} Jours</p>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label>Date de réponse finale</label>
+                        </div>
+                        <div class="col-md-6">
+                          <p>{{ supplier.finalResponse }} Jours</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              
+              </div>
+            </div>
+          </div>
+        </form>          
+        <!-- logo Modal -->
+        <div class="modal fade" id="logoModal" tabindex="-1" role="dialog" aria-labelledby="logoModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="p-2">
+                <form action="{{ url_for('supp.update_logo_supplier', supplier_id=supplier.id) }}" method="POST"
+                  enctype=multipart/form-data>
+                  {{ f2.hidden_tag() }}
+                  <div class="modal-header">
+                    {{ f2.file.label(class="form-control-label") }}
+                    {% if f2.file.errors %}
+                    {{ f2.file(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in f2.file.errors %}
+                      <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ f2.file(class="form-control form-control-lg", type="file") }}
+                    {% endif %}
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    {{ f2.submit(class="btn btn-success") }}
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  <!-- /.container-fluid -->
+</div>
+        <!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+{% endblock JsAfterTemplate %}

@@ -1,0 +1,139 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+  /* Table actions icons*/
+  table.table td a.view {
+    color: #03A9F4;
+  }
+
+  table.table td a.edit {
+    color: #FFC107;
+  }
+
+  table.table td a.delete {
+    color: #E34724;
+  }
+
+
+  .hint-text {
+    float: left;
+    margin-top: 6px;
+    font-size: 95%;
+  }
+</style>
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <div class="card shadow mb-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="card-header py-3">
+      <div class="d-inline p-2">
+        <spam class="m-0 font-weight-bold text-primary">Liste des rapports 8D</spam>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive-sm mt-4">
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div id="dataTable_filter" class="dataTables_filter">
+              <label>Search:<input id="myInput" type="text" class="form-control form-control-sm float-right"
+                  placeholder="" aria-controls="dataTable"></label>
+            </div>
+          </div>
+        </div>
+        <table class="table table-hover " id="myTable">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Numéro Réclamation</th>
+              <th scope="col">Fournisseur</th>              
+              <th scope="col">Date de début</th>
+              <th scope="col">Délai</th>              
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="myTable">
+            {% if 'super_admin' in roles %}  
+              {% for report in reports %}
+              <tr>
+                <td>{{ select_comp(report.id).number }}</td>
+                <td>{{ select_supp(select_comp(report.id).supplier_id).name }}</td>
+                <td>{{ report.startDate.strftime('%Y-%m-%d') }}</td>
+                <td>{{ report.deadLine.strftime('%Y-%m-%d') }}</td>
+                <td>
+                  <a href="{{ url_for('comp.consult_report', report_id=report.id) }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                </td>
+              </tr>
+              {% endfor %}
+            {% elif current_user.type=="sysuser" %}  
+              {% for report in reports %}
+              {% if select_comp(report.id).sysuser_id == current_user.id %}
+              <tr>
+                <td>{{ select_comp(report.id).number }}</td>
+                <td>{{ select_supp(select_comp(report.id).supplier_id).name }}</td>
+                <td>{{ report.startDate.strftime('%Y-%m-%d') }}</td>
+                <td>{{ report.deadLine.strftime('%Y-%m-%d') }}</td>
+                <td>
+                  <a href="{{ url_for('comp.consult_report', report_id=report.id) }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            {% elif current_user.type=="suppuser" %}  
+              {% for report in reports %}
+              {% if select_comp(report.id).supplier_id == current_user.supplier_id %}
+              <tr>
+                <td>{{ select_comp(report.id).number }}</td>
+                <td>{{ select_supp(select_comp(report.id).supplier_id).name }}</td>
+                <td>{{ report.startDate.strftime('%Y-%m-%d') }}</td>
+                <td>{{ report.deadLine.strftime('%Y-%m-%d') }}</td>
+                <td>
+                  {% if not report.closed and 'complaint_level2' in roles %}
+                  <a href="{{ url_for('comp.report8D', report_id=report.id) }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                  {% endif %}
+                  <a href="{{ url_for('comp.consult_report', report_id=report.id) }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                </td>
+              </tr>
+              {% endif %}
+              {% endfor %}
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+  $(document).ready(function () {
+    $("#myInput").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#myTable > tbody > tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+{% endblock JsAfterTemplate %}

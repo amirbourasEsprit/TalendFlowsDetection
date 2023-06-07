@@ -1,0 +1,230 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block StyleAfterTemplate %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+        <div class="container">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+              <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                    <div class="p-5">
+                      <ul class="nav nav-tabs">
+                      </ul>
+                      <p></p>
+                      <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Fournisseur</h1>
+                      </div>
+                      <form class="user"  method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="form-group row">
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                          {{ form.uniqueIdentifier.label(class="form-control-label") }}      
+                          {% if form.uniqueIdentifier.errors %}
+                              {{ form.uniqueIdentifier(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                  {% for error in form.uniqueIdentifier.errors %}
+                                      <span>{{ error }}</span>
+                                  {% endfor %}
+                              </div>
+                          {% else %}
+                              {{ form.uniqueIdentifier(class="form-control form-control-lg") }}
+                          {% endif %}
+                          </div>
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.taxRegisration.label(class="form-control-label") }}      
+                            {% if form.taxRegisration.errors %}
+                                {{ form.taxRegisration(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.taxRegisration.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.taxRegisration(class="form-control form-control-lg") }}
+                            {% endif %}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.name.label(class="form-control-label") }}      
+                              {% if form.name.errors %}
+                              {{ form.name(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.name.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %}
+                                {{ form.name(class="form-control form-control-lg") }}
+                            {% endif %}
+                          </div>
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.adresse.label(class="form-control-label") }}      
+                              {% if form.adresse.errors %}
+                              {{ form.adresse(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.adresse.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %}
+                                {{ form.adresse(class="form-control form-control-lg") }}
+                            {% endif %}
+                          </div>
+                        </div>
+                          <div class="form-group row">
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.phone.label(class="form-control-label") }}      
+                              {% if form.phone.errors %}
+                              {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.phone.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %}
+                                {{ form.phone(class="form-control form-control-lg") }}
+                            {% endif %}
+                          </div>
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.status.label(class="form-control-label") }}      
+                              {% if form.status.errors %}
+                              {{ form.status(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.status.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %}
+                                {{ form.status(class="form-control form-control-lg") }}
+                            {% endif %}
+                          </div>
+                        </div>
+                          <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.category.label(class="form-control-label") }}      
+                            {% if form.category.errors %}
+                              {{ form.category(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.category.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                            {% else %}
+                              {{ form.category(class="form-control form-control-lg") }}
+                            {% endif %}
+                        </div>
+                      </div>
+                        <ul class="nav nav-tabs">
+                        </ul>
+                        <p></p>
+                          <div class="text-center">
+                            <h1 class="h4 text-gray-900 mb-4">Jalon</h1>
+                          </div>  
+                          <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                              {{ form.jalan3D.label(class="form-control-label") }}      
+                                {% if form.jalan3D.errors %}
+                                {{ form.jalan3D(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                  {% for error in form.jalan3D.errors %}
+                                    <span>{{ error }}</span>
+                                  {% endfor %}
+                                </div>
+                                {% else %}
+                                  {{ form.jalan3D(class="form-control form-control-lg") }}
+                              {% endif %}
+                            </div>
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                              {{ form.jalan5D.label(class="form-control-label") }}      
+                                {% if form.jalan5D.errors %}
+                                {{ form.jalan5D(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                  {% for error in form.jalan5D.errors %}
+                                    <span>{{ error }}</span>
+                                  {% endfor %}
+                                </div>
+                                {% else %}
+                                  {{ form.jalan5D(class="form-control form-control-lg") }}
+                              {% endif %}
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                              {{ form.jalan8D.label(class="form-control-label") }}      
+                                {% if form.jalan8D.errors %}
+                                {{ form.jalan8D(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                  {% for error in form.jalan8D.errors %}
+                                    <span>{{ error }}</span>
+                                  {% endfor %}
+                                </div>
+                                {% else %}
+                                  {{ form.jalan8D(class="form-control form-control-lg") }}
+                              {% endif %}
+                            </div>
+                            </div>
+                            <ul class="nav nav-tabs">
+                            </ul>
+                            <p></p>
+                              <div class="text-center">
+                                <h1 class="h4 text-gray-900 mb-4">Temps de Reponse</h1>
+                              </div>  
+                              <div class="form-group row">
+                                <div class="col-sm-6 mb-3 mb-sm-0">
+                                  {{ form.initialResponse.label(class="form-control-label") }}      
+                                    {% if form.initialResponse.errors %}
+                                    {{ form.initialResponse(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                      {% for error in form.initialResponse.errors %}
+                                        <span>{{ error }}</span>
+                                      {% endfor %}
+                                    </div>
+                                    {% else %}
+                                      {{ form.initialResponse(class="form-control form-control-lg") }}
+                                  {% endif %}
+                                </div>
+                                <div class="col-sm-6 mb-3 mb-sm-0">
+                                  {{ form.finalResponse.label(class="form-control-label") }}      
+                                    {% if form.finalResponse.errors %}
+                                    {{ form.finalResponse(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                      {% for error in form.finalResponse.errors %}
+                                        <span>{{ error }}</span>
+                                      {% endfor %}
+                                    </div>
+                                    {% else %}
+                                      {{ form.finalResponse(class="form-control form-control-lg") }}
+                                  {% endif %}
+                                </div>
+                              </div>
+
+                     
+                       
+                     
+                        <div class="form-group row ">                          
+                          <div class="col-sm-2 mb-3 mb-sm-0">
+                            <a href="{{ url_for('main.supplier') }}" class="btn btn-secondary btn-lg btn-user btn-block" type="reset">
+                              <span class="text">Retour</span>
+                            </a>
+                          </div>
+                          <div class="col-sm-2">
+                            {{ form.submit(class="btn btn-primary btn-user btn-block") }}
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+              </div>
+            </div>
+        
+        </div>
+        <!-- End of Main Content -->
+
+{% endblock content %}

@@ -1,0 +1,366 @@
+{% extends "page.html" %}
+{% block StyleAfterTemplate %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link href="/static/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+{% endblock StyleAfterTemplate %}
+
+
+{% block content %}
+<div id="decPrint" class="container-fluid">
+
+
+    <div class="card shadow mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="noprint alert alert-{{ category }}" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="card-header py-2">
+            <div class="noprint d-inline mt-3">
+                <a href="{{url_for('cost.view_supplier_declarations')}}" class="btn  btn-icon btn-md">
+                    <span class="icon  text-black-50">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                </a>
+            </div>
+            <div class="d-inline  mt-3">
+                <span class="h5 font-weight-bold text-primary">Déclaration de coûts : {{declaration.number}}</span>
+
+            </div>
+            <div style="float:right" class="noprint d-inline mt-1 mr-2">
+                {% if declaration.status == "Brouillon" %}
+                {% set status_color = "badge badge-warning" %}
+                {% elif declaration.status == "Soumise" %}
+                {% set status_color = "badge badge-primary" %}
+                {% elif declaration.status == "Rejetée" %}
+                {% set status_color = "badge badge-danger" %}
+                {% elif declaration.status == "Validée" %}
+                {% set status_color = "badge badge-success" %}
+                {% elif declaration.status == "Facturée" %}
+                {% set status_color = "badge badge-secondary" %}
+                {% elif declaration.status == "Encaissée" %}
+                {% set status_color = "badge badge-dark" %}
+                {% else %}
+                {% set status_color = "error" %}
+                {% endif %}
+                {% if declaration.status == "Soumise" %}
+                <h5><span class="{{status_color}}">Statut : Nouveau</span></h5>
+                {% else %}
+                <h5><span class="{{status_color}}">Statut : {{declaration.status}}</span></h5>
+                {% endif %}
+
+
+
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="noprint row mb-3">
+                {% if declaration.status == "Soumise" %}
+                {% set valider_btn = "Valider" %}
+                {% set url_valider_btn = url_for('cost.update_suppdeclaration_status',declaration_id=declaration.id,action=valider_btn) %}
+                {% set rejeter_btn = "Rejeter" %}
+                {% set url_rejeter_btn = url_for('cost.update_suppdeclaration_status',declaration_id=declaration.id,action=rejeter_btn) %}
+                {% else %}
+                {% set valider_btn = "Rien" %}
+                {% endif %}
+                {% if valider_btn != "Rien" and action == "update" %}
+                {% if current_user.type=="suppuser" and 'cost_level2' in roles %}
+                <div class="col-12 col-sm-1 mr-1">
+                    <a href={{url_valider_btn}} role="button" class="btn btn-success">{{valider_btn}}</a>
+                </div>
+
+                <div class="col-12 col-sm-1 mr-1">
+                    <a href="" role="button" data-toggle="modal" data-target="#rejectDeclarationModal"
+                        class="btn btn-danger">{{rejeter_btn}}</a>
+                </div>
+                {% endif %}
+                <!-- Rejeter Modal -->
+                <div class="modal fade" id="rejectDeclarationModal" tabindex="-1" role="dialog"
+                    aria-labelledby="rejectDeclarationModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="rejectDeclarationModalLabel">Voulez vous rejeter cette
+                                    déclaration?</h5>
+
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form action="{{url_rejeter_btn}}" method="POST">
+                                <div class="modal-body">
+                                    <div class="col-12">
+                                        <label for="comment">Pourquoi voulez-vous rejeter cette déclaration?</label>
+                                        <textarea id="comment" class="form-control" name="comment" rows="5"
+                                            maxlength="199"></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Annuler</button>
+
+                                    <input class="btn btn-danger" type="submit" value="{{rejeter_btn}}">
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+
+            </div>
+            <div id="for_print">
+            <div class="card shadow  mb-4">
+                <a href="#collapseHeader" class="d-block card-header py-3" data-toggle="collapse" role="button"
+                    aria-expanded="true" aria-controls="collapseHeader">
+                    <h6 class="m-0 font-weight-bold text-gray-900">En-tête de la déclaration</h6>
+                </a>
+                <div class="collapse show" id="collapseHeader">
+                    <div  class="card-body">
+
+                        <div  class="row printableItem">
+                            <div class="col-xl-4">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless">
+
+                                        <tbody>
+                                            <tr>
+                                                <th>Ref. déclaration</th>
+                                                <td>{{declaration.number}}</td>
+
+                                            </tr>
+                                            <tr>
+                                                <th>Ref. réclamation</th>
+                                                <td>{{complaint_number}}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Date de création</th>
+                                                <td>{{declaration.creationDate.strftime('%d-%m-%Y')}}</td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <th>Statut de la déclaration</th>
+                                                <td>
+                                                    {% if declaration.status == "Brouillon" %}
+                                                    {% set status_color = "badge badge-warning" %}
+                                                    {% elif declaration.status == "Soumise" %}
+                                                    {% set status_color = "badge badge-primary" %}
+                                                    {% elif declaration.status == "Rejetée" %}
+                                                    {% set status_color = "badge badge-danger" %}
+                                                    {% elif declaration.status == "Validée" %}
+                                                    {% set status_color = "badge badge-success" %}
+                                                    {% elif declaration.status == "Facturée" %}
+                                                    {% set status_color = "badge badge-secondary" %}
+                                                    {% elif declaration.status == "Encaissée" %}
+                                                    {% set status_color = "badge badge-dark" %}
+                                                    {% else %}
+                                                    {% set status_color = "error" %}
+                                                    {% endif %}
+                                                    {% if declaration.status == "Soumise" %}
+                                                    <span class="{{status_color}}">Nouveau</span>
+                                                    {% else %}
+                                                    <span class="{{status_color}}">{{declaration.status}}</span>
+                                                    {% endif %}
+
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <th>N° Ordre de paiement</th>
+                                                <td>{{declaration.paymentNumber or ""}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-xl-2">
+
+                            </div>
+                            <div class="col-xl-5">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless">
+
+                                        <tbody>
+                                            <tr>
+
+                                                <th>Nom du fournisseur</th>
+                                                <td>{{supplier.name}}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>Montant total</th>
+                                                <td>{{declaration.totalCost}}</td>
+
+                                            </tr>
+                                            <tr>
+
+                                                <th>Devise</th>
+                                                <td>{{supplier.currency}}</td>
+                                            </tr>
+                                            <tr>
+
+                                                <th>N° Facture</th>
+                                                <td>{{declaration.billNumber or "" }}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>Mode de paiement</th>
+                                                <td>{{declaration.paymentMethod or "" }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        {% if declaration.status == "Rejetée" %}
+                        <div class="noprint row col-12">
+                            
+                            <div class="col-12">
+                                <label class="form-control-label font-weight-bold" for="comment">Commentaire du fournisseur</label>
+                                <textarea id="comment" class="form-control" name="comment" rows="2" disabled>{{ declaration.comment }}</textarea>
+                            </div>
+
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow mb-4">
+                <a href="#collapseCosts" class="d-block card-header py-3" data-toggle="collapse" role="button"
+                    aria-expanded="true" aria-controls="collapseCosts">
+                    <h6 class="m-0 font-weight-bold text-gray-900">Lignes de coûts</h6>
+                </a>
+                <div class="collapse show" id="collapseCosts">
+                    <div  class="card-body">
+                        <div class="row">
+                            <div class="noprint col-sm-4 col-md-5 col-lg-8">
+                                <div id="dataTable_filter" class="dataTables_filter">
+                                    <label>Rechercher:<input id="myInput" type="text"
+                                            class="form-control form-control-sm " placeholder=""
+                                            aria-controls="dataTable"></label>
+                                </div>
+                            </div>
+
+                            <div  class="table-responsive printableItem">
+                                <table  class="table table-bordered table-hover row-border" name="myTable" id="myTable"
+                                    width="100%" class="display">
+                                    <thead class="text-primary" style="font-size: 12px;">
+                                        <th>Code Frais</th>
+                                        <th>Description</th>
+                                        <th>Quantité</th>
+                                        <th>Unité</th>
+                                        <th>Prix Unitaire</th>
+                                        <th>Coefficient</th>
+                                        <th>Autre Coût</th>
+                                        <th>Montant</th>
+                                        <th class="noprint">Commentaire</th>
+                                    </thead>
+                                    <tbody>
+                                        {% for charge,cost in costs %}
+                                        <tr>
+                                            <td>{{charge.code}}</td>
+                                            <td>{{charge.description}}</td>
+                                            <td>{{cost.hoursNumber}}</td>
+                                            <td>{{charge.unit}}</td>
+                                            <td>{{cost.unitcost}}</td>
+                                            <td>{{cost.coefficient}}</td>
+                                            <td>{{cost.othercost}}</td>
+                                            <td>{{cost.lineCost}}</td>
+                                            <td class="noprint">{{cost.lineComment}}</td>
+
+                                        </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="noprint row mb-3 float-right">
+        <div class="col-12 col-sm-1">
+            <a href="" onclick="print_page();" class="btn btn-primary btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-print"></i>
+                </span>
+                <span class="text">Imprimer</span>
+            </a>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script src="/static/vendor/datatables/jquery.dataTables.min.js"></script>
+<script src="/static/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+
+<script>
+        $(document).ready(function () {
+            var table = $('#myTable').DataTable({
+                "lengthMenu": -1,
+                "language": {
+                    "emptyTable": "Aucune ligne de coûts disponible"
+                },
+                "paging": false,
+                "info": false,
+                "ordering": false,
+                "searching": false
+            });
+        });
+
+
+        // search Table 
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable > tbody > tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+
+        //print// 
+        function print_page() {
+	        var WinPrint = window.open('', '', 'left=0,top=0,width=8000,height=9000,toolbar=0,scrollbars=0,status=0');
+			WinPrint.document.write('<html><head>');
+			WinPrint.document.write('<link href="{{ url_for("static", filename="vendor/fontawesome-free/css/all.min.css") }}" rel="stylesheet" type="text/css"/>');
+			WinPrint.document.write('<link href="{{ url_for("static", filename="css/fonts.googleapis.css") }}" rel="stylesheet"/>');
+			WinPrint.document.write('<link href="{{ url_for("static", filename="css/style.min.css") }}" rel="stylesheet"/>');
+            WinPrint.document.write('<link href="{{ url_for("static", filename="vendor/datatables/dataTables.bootstrap4.min.css") }}" rel="stylesheet"/>');
+
+            WinPrint.document.write('</head><body>');
+            decPrint = document.getElementById("decPrint")
+           
+            WinPrint.document.write(decPrint.innerHTML);
+            
+   
+            WinPrint.document.write('<script>document.querySelectorAll(".noprint").forEach(e => e.remove());</' + 'script>');
+            
+			WinPrint.document.close();
+			WinPrint.window.focus();
+    		WinPrint.window.print();
+			return true;
+		}
+
+    </script>
+{% endblock JsAfterTemplate %}

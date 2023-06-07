@@ -1,0 +1,75 @@
+{% extends "page.html" %}
+
+{% set form  = myDict['form'] %}
+
+{% block content %}
+<div class="container">
+  <div class="team-single">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-center">
+      <h1 class="h3 mb-0 text-gray-800"></h1>
+    </div>
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="center">
+      <div class="col-xl-6 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-header">
+              <i class="fas fa-file-alt fa-2x text-gray-300">   </i>
+              Prediction of the Duration by Count
+          </div>
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                
+                <form class="user" method="POST" action="">
+                  {{ form.hidden_tag() }}
+  
+                  <div class="form-group row">
+                    <div class="col mr-2">
+                      {{ form.parameter.label(class="form-control-label") }}
+                      {% if form.parameter.errors %}
+                      {{ form.parameter(class="form-control form-control-lg is-invalid") }}
+                      <div class="invalid-feedback">
+                        {% for error in form.parameter.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                      </div>
+                      {% else %}
+                      {{ form.parameter(class="form-control form-control-lg") }}
+                      {% endif %}
+  
+                    </div>
+                  </div>
+  
+                  <div class="float-right">
+                    <a class="btn btn-success btn-icon-split">
+                      <span class="icon text-white-50">
+                        <i class="fas fa-check"></i>
+                      </span>
+                      {{ form.submit(class="btn btn-success btn-lg btn-icon-split") }}
+                    </a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+{% endblock content %}

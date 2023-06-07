@@ -1,0 +1,188 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container">
+  <div class="card o-hidden border-0 shadow-lg my-5">
+    <div class="card-body p-0">
+      <!-- Nested Row within Card Body -->
+      <div class="p-5">
+        <div class="text-center">
+          <h1 class="h4 text-gray-900 mb-4">Réclamation</h1>
+        </div>
+        <form class="user" method="POST" action="" enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+
+          <div class="form-group">
+            {{ form.supplier.label(class="form-control-label") }}
+            {% if form.supplier.errors %}
+            {{ form.supplier(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.supplier.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.supplier(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.deliveryForm.label(class="form-control-label") }}
+            {% if form.deliveryForm.errors %}
+            {{ form.deliveryForm(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.deliveryForm.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.deliveryForm(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.project.label(class="form-control-label") }}
+            {% if form.project.errors %}
+            {{ form.project(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.project.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.project(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.article.label(class="form-control-label") }}
+            {% if form.article.errors %}
+            {{ form.article(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.article.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.article(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.client.label(class="form-control-label") }}
+            {% if form.client.errors %}
+            {{ form.client(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.client.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.client(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.suspectQuantity.label(class="form-control-label") }}
+            {% if form.suspectQuantity.errors %}
+            {{ form.suspectQuantity(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.suspectQuantity.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.suspectQuantity(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">                       
+              {{ form.detectionZone.label(class="form-control-label") }}  
+            </div>
+            <div class="col-sm-6 mb-3 mb-sm-0">   
+              {% if form.detectionZone.errors %}
+                {{ form.detectionZone(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.detectionZone.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.detectionZone(class="") }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            {{ form.problemDescription.label(class="form-control-label") }}
+            {% if form.problemDescription.errors %}
+            {{ form.problemDescription(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.problemDescription.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.problemDescription(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.verificationMethod.label(class="form-control-label") }}
+            {% if form.verificationMethod.errors %}
+            {{ form.verificationMethod(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.verificationMethod.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.verificationMethod(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.file.label(class="form-control-label") }}
+            {% if form.file.errors %}
+            {{ form.file(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.file.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.file(class="form-control form-control-lg", multiple="multiple") }}
+            {% endif %}
+          </div>
+          <br>
+          <div class="float-right">
+            <a href="{{ url_for('.complaint') }}" class="btn btn-secondary btn-icon-split" type="reset">
+              <span class="icon text-white-50">
+                <i class="fas fa-arrow-left"></i>
+              </span>
+              <span class="text">Retour</span>
+            </a>
+            <a class="btn btn-success btn-icon-split">
+              <span class="icon text-white-50">
+                <i class="fas fa-check"></i>
+              </span>
+              {{ form.submit(class="btn btn-success btn-icon-split") }}
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#ministry').select2();
+  });
+</script>
+{% endblock JsAfterTemplate %}

@@ -1,0 +1,28 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+        <div class="container-fluid">
+            <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Données à importer</h6>
+              </div>
+              <div class="card-body">
+                    <nav class="navbar navbar-expand navbar-light bg-light mb-4">
+                      <a class="navbar-brand" href="{{ url_for('admin.project') }}" >Projets</a>
+                    </nav>
+                    <nav class="navbar navbar-expand navbar-light bg-light mb-4">
+                      <a class="navbar-brand" href="{{ url_for('admin.article') }}" >Articles</a>
+                    </nav>
+                    <nav class="navbar navbar-expand navbar-light bg-light mb-4">
+                      <a class="navbar-brand" href="{{ url_for('admin.client') }}" >Clients</a>
+                    </nav>
+              </div>
+            </div>  
+        </div>
+        <!-- End of Main Content -->
+
+{% endblock content %}

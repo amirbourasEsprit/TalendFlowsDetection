@@ -1,0 +1,141 @@
+{% extends "page.html" %}
+{% set form = myDict['form'] %}
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<style>
+    /* Table actions icons*/
+    table.table td a.view {
+        color: #03A9F4;
+    }
+
+    table.table td a.edit {
+        color: #FFC107;
+    }
+
+    table.table td a.delete {
+        color: #E34724;
+    }
+
+
+    .hint-text {
+        float: left;
+        margin-top: 6px;
+        font-size: 95%;
+    }
+</style>
+{% endblock StyleAfterTemplate %}
+
+
+{% block content %}
+<div class="container-fluid">
+
+
+    <div class="card shadow mb-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <div class="card-header py-3">
+            <div class="d-inline">
+                <span class="h5 font-weight-bold text-primary">Liste des déclarations de coûts</span>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if current_user.type=="sysuser" and 'cost_level2' in roles %} 
+            <a href="{{url_for('cost.add_declaration')}}" class="btn btn-success btn float-right">
+                <span class="icon text-white-50">
+                  <i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+                </span>
+                <span class="text">Ajouter une déclaration</span>
+            </a>
+            {% endif %}
+            <div class="table-responsive-sm mt-4">
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                    <div id="dataTable_filter" class="dataTables_filter">
+                      <label>Search:<input id="myInput" type="text" class="form-control form-control-sm float-right" placeholder="" aria-controls="dataTable"></label>
+                    </div>
+                  </div>
+                </div>
+                <table class="table table-hover " id="myTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Déclaration</th>
+                            <th scope="col">Réclamation</th>
+                            <th scope="col">Fournisseur</th>
+                            <th scope="col">Date de création</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for declaration,complaint,supp in declarations %}
+                        <tr>
+
+                            <td>{{ declaration.number }}</td>
+                            <td>{{ complaint.number }}</td>
+                            <td>{{ supp.name }}</td>
+                            <td>{{ declaration.creationDate.strftime('%Y-%m-%d') }}</td>
+                            <td>{% if declaration.status == "Brouillon" %}
+                                {% set status_color = "badge badge-warning" %}
+                                {% elif declaration.status == "Soumise" %}
+                                {% set status_color = "badge badge-primary" %}
+                                {% elif declaration.status == "Rejetée" %}
+                                {% set status_color = "badge badge-danger" %}
+                                {% elif declaration.status == "Validée" %}
+                                {% set status_color = "badge badge-success" %}
+                                {% elif declaration.status == "Facturée" %}
+                                {% set status_color = "badge badge-secondary" %}
+                                {% elif declaration.status == "Encaissée" %}
+                                {% set status_color = "badge badge-dark" %}
+                                {% else %}
+                                {% set status_color = "error" %}
+                                {% endif %}
+                                <span class="{{status_color}}">{{declaration.status}}</span></td>
+                            <td>
+                                <a href="{{ url_for('cost.view_declaration', declaration_id=declaration.id) }}"
+                                    class="view" title="View" data-toggle="tooltip"><i
+                                        class="material-icons">&#xE417;</i></a>
+                                {% if 'cost_level2' in roles %} 
+                                    {% if declaration.status == "Brouillon" or declaration.status == "Soumise" or declaration.status == "Rejetée" or declaration.status == "Validée" %}
+                                    <a href="{{ url_for('cost.update_declaration', declaration_id=declaration.id) }}"
+                                        class="edit" title="Edit" data-toggle="tooltip"><i
+                                            class="material-icons">&#xE254;</i></a>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% block JsAfterTemplate %}
+<script>
+    $(document).ready(function () {
+        $("#myInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#myTable > tbody > tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+{% endblock JsAfterTemplate %}

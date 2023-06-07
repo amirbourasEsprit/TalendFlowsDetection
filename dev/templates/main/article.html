@@ -1,0 +1,145 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+  /* Table actions icons*/
+  table.table td a.view {
+    color: #03A9F4;
+  }
+
+  table.table td a.edit {
+    color: #FFC107;
+  }
+
+  table.table td a.delete {
+    color: #E34724;
+  }
+
+
+  .hint-text {
+    float: left;
+    margin-top: 6px;
+    font-size: 95%;
+  }
+</style>
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <div class="card shadow mb-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="card-header py-3">
+      <div class="d-inline">
+        <a href="{{ url_for('main.import_data') }}" class="btn  btn-icon btn-md">
+          <span class="icon  text-black-50">
+            <i class="fas fa-arrow-left"></i>
+          </span>
+        </a>
+      </div>
+      <div class="d-inline p-2">
+        <spam class="m-0 font-weight-bold text-primary">Liste des articles</spam>
+      </div>
+    </div>
+    <div class="card-body">
+      <a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#articleModal">
+        <span class="icon text-white-50">
+          <i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+        </span>
+        <span class="text">Ajouter des articles</span>
+      </a>
+      <div class="table-responsive-sm mt-4">
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div id="dataTable_filter" class="dataTables_filter">
+              <label>Search:<input id="myInput" type="text" class="form-control form-control-sm float-right"
+                  placeholder="" aria-controls="dataTable"></label>
+            </div>
+          </div>
+        </div>
+        <table class="table table-hover " id="myTable">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">Code Interne</th>
+              <th scope="col">Code Externe</th>
+              <th scope="col">Designation</th>
+            </tr>
+          </thead>
+          <tbody id="myTable">
+            {% for article in articles %}
+            <tr>
+              <td>{{ article.internaltCode }}</td>
+              <td>{{ article.externaltCode }}</td>
+              <td>{{ article.designation }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <!-- article Modal -->
+        <div class="modal fade" id="articleModal" tabindex="-1" role="dialog" aria-labelledby="articleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <form action="{{ url_for('main.add_article') }}" method="POST"
+                enctype=multipart/form-data>
+                {{ form.hidden_tag() }}
+                <div class="modal-header">
+                  {{ form.file.label(class="form-control-label") }}
+                  {% if form.file.errors %}
+                  {{ form.file(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.file.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.file(class="form-control form-control-lg", type="file") }}
+                  {% endif %}
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                  {{ form.submit(class="btn btn-success") }}
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+  $(document).ready(function () {
+    $("#myInput").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#myTable > tbody > tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+{% endblock JsAfterTemplate %}

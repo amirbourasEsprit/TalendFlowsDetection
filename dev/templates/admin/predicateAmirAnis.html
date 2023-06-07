@@ -1,0 +1,264 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container">
+  <div class="card o-hidden border-0 shadow-lg my-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="card-body p-0">
+      <!-- Nested Row within Card Body -->
+      <div class="p-5">
+        <div class="text-center">
+          <h1 class="h4 text-gray-900 mb-4">Prediction of Count</h1>
+        </div>
+        <form class="user" method="POST" action="">
+          {{ form.hidden_tag() }}
+
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              {{ form.pid.label(class="form-control-label") }}
+              {% if form.pid.errors %}
+              {{ form.pid(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.pid.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.pid(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              {{ form.project.label(class="form-control-label") }}
+              {% if form.project.errors %}
+              {{ form.project(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.project.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.project(class="form-control form-control-lg") }}
+              {% endif %}
+
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              {{ form.job.label(class="form-control-label") }}
+              {% if form.job.errors %}
+              {{ form.job(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.job.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.job(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              {{ form.job_repository_id.label(class="form-control-label") }}
+              {% if form.job_repository_id.errors %}
+              {{ form.job_repository_id(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.job_repository_id.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.job_repository_id(class="form-control form-control-lg") }}
+              {% endif %}
+              
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              {{ form.origin.label(class="form-control-label") }}
+              {% if form.origin.errors %}
+              {{ form.origin(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.origin.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.origin(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              {{ form.system_pid.label(class="form-control-label") }}
+              {% if form.system_pid.errors %}
+              {{ form.system_pid(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.system_pid.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.system_pid(class="form-control form-control-lg") }}
+              {% endif %}
+              
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              {{ form.job_version.label(class="form-control-label") }}
+              {% if form.job_version.errors %}
+              {{ form.job_version(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.job_version.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.job_version(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              {{ form.year.label(class="form-control-label") }}
+              {% if form.year.errors %}
+              {{ form.year(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.year.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.year(class="form-control form-control-lg") }}
+              {% endif %}
+              
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              {{ form.month.label(class="form-control-label") }}
+              {% if form.month.errors %}
+              {{ form.month(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.month.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.month(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              {{ form.day.label(class="form-control-label") }}
+              {% if form.day.errors %}
+              {{ form.day(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.day.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.day(class="form-control form-control-lg") }}
+              {% endif %}
+              
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              {{ form.hour.label(class="form-control-label") }}
+              {% if form.hour.errors %}
+              {{ form.hour(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.hour.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.hour(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              {{ form.minute.label(class="form-control-label") }}
+              {% if form.minute.errors %}
+              {{ form.minute(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.minute.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.minute(class="form-control form-control-lg") }}
+              {% endif %}
+              
+            </div>
+          </div>
+          
+        
+          <div class="float-right">
+            <a class="btn btn-success btn-icon-split">
+              <span class="icon text-white-50">
+                <i class="fas fa-check"></i>
+              </span>
+              {{ form.submit(class="btn btn-success btn-icon-split") }}
+            </a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#company').select2();
+    $('#site').select2();
+  });
+
+  let company_select = document.getElementById('company');
+  let site_select = document.getElementById('site');
+
+  company_select.onchange = function () {
+    company = company_select.value;
+    fetch('/sit/' + company).then(function (response) {
+      let optionHTML = '';
+      response.json().then(function (data) {
+        for (let site of data.sites) {
+          optionHTML += '<option value="' + site.id + '">' + site.name + '</option>';
+        }
+        site_select.innerHTML = optionHTML;
+      });
+    });
+  }
+</script>
+<script>
+  $(document).ready(function() {
+      $('#role').select2();
+  }); 
+</script>
+{% endblock JsAfterTemplate %}

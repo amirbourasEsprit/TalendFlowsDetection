@@ -1,0 +1,134 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block StyleAfterTemplate %}
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+      
+        /* Table actions icons*/
+      table.table td a.view {
+          color: #03A9F4;
+      }
+
+      table.table td a.edit {
+          color: #FFC107;
+      }
+
+      table.table td a.delete {
+          color: #E34724;
+      }
+
+
+      .hint-text {
+          float: left;
+          margin-top: 6px;
+          font-size: 95%;
+      }
+  </style>
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+        <div class="container-fluid">
+            <div class="card shadow mb-4">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Liste des Certificats</h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive-sm mt-4">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                      <div id="dataTable_filter" class="dataTables_filter">
+                        <label>Search:<input id="myInput" type="text" class="form-control form-control-sm float-right" placeholder="" aria-controls="dataTable"></label>
+                      </div>
+                    </div>
+                  </div>
+                  <table class="table table-hover " id="myTable">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col">Type certificat</th>
+                        <th scope="col">Nom</th>
+                        <th scope="col">Nom Fournisseur</th>
+                        <th scope="col">date d'expiration</th>
+                        <th scope="col">status</th>
+                        <th scope="col">attachement</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="myTable">
+                      {% for certificate,ss,dd in certificates %}
+                     
+
+                      <tr>
+                        <td>{{ ss.name }}</td>
+                        <td>{{ certificate.name }}</td>
+                        <td>{{ dd.name }}</td>
+                        <td>{{ certificate.expirationDate }}</td>
+                        <td>{{ certificate.status }}</td>
+                        <td>
+                          <a href="{{ url_for('main.consult_certificate', certificate_id=certificate.id) }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                        </td>
+                        <td>
+
+                            <a href="#" class="delete" data-toggle="modal" data-target="#deleteModal-{{ certificate.id }}"><i class="material-icons">&#xE872;</i></a>
+                            <!-- Modal -->
+                          <div class="modal fade" id="deleteModal-{{ certificate.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="deleteModalLabel">Voulez vous supprimer cette certificat?</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                  <form action="{{ url_for('main.delete_certificate', certificate_id=certificate.id) }}" method="POST">
+                                    <input class="btn btn-danger" type="submit" value="Supprimer">
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          </td>
+                          
+                      </tr>
+                      {% endfor %}
+               
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>  
+        </div>
+        <!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable > tbody > tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+{% endblock JsAfterTemplate %}

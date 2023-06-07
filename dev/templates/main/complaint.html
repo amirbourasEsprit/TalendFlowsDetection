@@ -1,0 +1,118 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block StyleAfterTemplate %}
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+      
+        /* Table actions icons*/
+      table.table td a.view {
+          color: #03A9F4;
+      }
+
+      table.table td a.edit {
+          color: #FFC107;
+      }
+
+      table.table td a.delete {
+          color: #E34724;
+      }
+
+
+      .hint-text {
+          float: left;
+          margin-top: 6px;
+          font-size: 95%;
+      }
+  </style>
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+        <div class="container-fluid">
+            <div class="card shadow mb-4">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Liste des réclamations</h6>                
+              </div>
+              <div class="card-body">                
+                <a href="{{ url_for('.add_complaint') }}" class="btn btn-success btn float-right">
+                  <span class="icon text-white-50">
+                    <i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+                  </span>
+                  <span class="text">Créer une réclamation</span>
+                </a>
+                <div class="table-responsive-sm mt-4">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                      <div id="dataTable_filter" class="dataTables_filter">
+                        <label>Search:<input id="myInput" type="text" class="form-control form-control-sm float-right" placeholder="" aria-controls="dataTable"></label>
+                      </div>
+                    </div>
+                  </div>
+                  <table class="table table-hover " id="myTable">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col">Numéro</th>
+                        <th scope="col">Bon de livraison</th>
+                        <th scope="col">Responsale</th>                        
+                        <th scope="col">Fournisseur</th>
+                        <th scope="col">status</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="myTable">
+                      {% for complaint in complaints %}
+                      <tr>
+                        <td>{{ complaint.number }}</td>
+                        <td>{{ complaint.deliveryForm }}</td>
+                        <td>{{ select_user(complaint.sysuser_id) }}</td>                        
+                        <td>{{ select_supp(complaint.supplier_id) }}</td>
+                        <td>{{ complaint.status }}</td>
+                        {% if complaint.status=="créée" %}
+                        <td>
+                          <a href="{{ url_for('.update_complaint', complaint_id=complaint.id) }}" class="edit" title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                        </td>
+                        {% else %}
+                        <td>
+                          <a href="{{ url_for('.consult_complaint', complaint_id=complaint.id) }}" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                        </td>
+                        {% endif %}
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>  
+        </div>
+        <!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable > tbody > tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+{% endblock JsAfterTemplate %}

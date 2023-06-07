@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  {% if title %}
+    <title>{{ gettext("title") }}</title>
+  {% endif %}
+  
+  {% if description %}
+      <meta name="description" content="{{ gettext('description') }}">
+  {% endif %}
+  
+  <meta name="keywords" content="" />
+  
+  <!-- Custom fonts for this template-->
+  <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
+  <link href="{{ url_for('static', filename='css/fonts.googleapis.css') }}" rel="stylesheet">
+  
+  {% block StyleBeforeTemplate %}{% endblock StyleBeforeTemplate %}
+
+  <!-- Custom styles for this template-->
+  <link href="{{ url_for('static', filename='css/style.min.css') }}" rel="stylesheet">
+
+  {% block StyleAfterTemplate %}{% endblock StyleAfterTemplate %}
+
+</head>
+  {% block layout %}{% endblock layout %}
+
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+  {% block JsBeforeTemplate %}{% endblock JsBeforeTemplate %}
+
+  <!-- Custom scripts for all pages-->
+  <script src="{{ url_for('static', filename='js/style.min.js') }}"></script>
+
+  {% block JsAfterTemplate %}{% endblock JsAfterTemplate %}
+
+</body>
+
+</html>
+
+
+

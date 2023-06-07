@@ -1,0 +1,132 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block StyleAfterTemplate %}
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <style>
+      
+        /* Table actions icons*/
+      table.table td a.view {
+          color: #03A9F4;
+      }
+
+      table.table td a.edit {
+          color: #FFC107;
+      }
+
+      table.table td a.delete {
+          color: #E34724;
+      }
+
+
+      .hint-text {
+          float: left;
+          margin-top: 6px;
+          font-size: 95%;
+      }
+  </style>
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+        <div class="container-fluid">
+            <div class="card shadow mb-4">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                  {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                      </button>
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endwith %}
+              <div class="card-header py-3">
+                <spam class="m-0 font-weight-bold text-primary">Liste des Manuels Qualité</spam>
+            </div>
+              <div class="card-body">
+                <div class="table-responsive-sm mt-4">
+                  <div class="row">
+                    <div class="col-sm-12 col-md-6">
+                      <div id="dataTable_filter" class="dataTables_filter">
+                        <label>Search:<input id="myInput" type="text" class="form-control form-control-sm float-right" placeholder="" aria-controls="dataTable"></label>
+                      </div>
+                    </div>
+                  </div>
+                  <table class="table table-hover " id="myTable">
+                    <thead class="thead-light">
+                      <tr>
+                        <th scope="col">Nom manuel qualité</th>
+                        <th scope="col">Nom Fournisseur</th>
+                        <th scope="col">attachement</th>
+                        <th scope="col">Status</th>                        
+                      </tr>
+                    </thead>
+                    <tbody id="myTable">
+                      {% for qualitymanual in qualitymanuals %}
+                      <tr>
+                        <td>{{ qualitymanual.name }}</td>
+                        <td>{{ select_sup(qualitymanual.supplier_id) }}</td>
+                        <td>
+                          <a href="{{ url_for('supp.consult_qualitymanual', qualitymanual_id=qualitymanual.id) }}" target="_blank" class="view" title="View" data-toggle="tooltip"><i class="material-icons">&#xE417;</i></a>
+                        </td>
+                        {% if qualitymanual.status=='créé' %}
+                        <td>
+                          <a href="" class="btn btn-primary btn" data-toggle="modal" data-target="#qmModal-{{ qualitymanual.id }}">
+											    <span class="text">Valider</span>
+										      </a>
+                        </td>
+                        {% else %}
+                        <td>{{ qualitymanual.status }}</td>
+                        {% endif %}
+                          <!-- valid Modal -->
+                          <div class="modal fade" id="qmModal-{{ qualitymanual.id }}" tabindex="-1" role="dialog" aria-labelledby="qmModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="qmModalLabel">voulez vous valider ce manuel de qualité?</h5>
+                                  <button type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary"
+                                    data-dismiss="modal">Annuler</button>
+                                  <form
+                                    action="{{ url_for('supp.valid_qualitymanual', qualitymanual_id=qualitymanual.id) }}" method="POST">
+                                    <input class="btn btn-success" type="submit" value="Valider">
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                      </tr>
+                      {% endfor %}               
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>  
+        </div>
+        <!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable > tbody > tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+{% endblock JsAfterTemplate %}

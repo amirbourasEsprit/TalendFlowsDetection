@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block layout %}
+<body class="bg-gradient-primary">
+
+  <div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+      <div class="col-xl-10 col-lg-12 col-md-9">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+              <img class="col-lg-6 d-none d-lg-block" src="{{ url_for('static', filename='img/dataraise.png') }}">
+              <div class="col-lg-6">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">Bienvenue</h1>
+                  </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <div class="alert alert-{{ category }}" role="alert">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                          </button>
+                          {{ message }}
+                      </div>
+                        {% endfor %}
+                      {% endif %}
+                  {% endwith %}
+                  <form method="POST" action="" class="user">
+                    {{ form.hidden_tag() }}
+                    {{ basedir }}
+                    
+                    <div class="form-group">
+                      {% if form.email.errors %}
+                          {{ form.email(class="form-control is-invalid") }}
+                          <div class="invalid-feedback">
+                              {% for error in form.email.errors %}
+                                  <span>{{ error }}</span>
+                              {% endfor %}
+                          </div>
+                      {% else %}
+                          {{ form.email(class="form-control") }}
+                      {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                      {% if form.password.errors %}
+                          {{ form.password(class="form-control is-invalid") }}
+                          <div class="invalid-feedback">
+                              {% for error in form.password.errors %}
+                                  <span>{{ error }}</span>
+                              {% endfor %}
+                          </div>
+                      {% else %}
+                          {{ form.password(class="form-control") }}
+                      {% endif %}
+                    </div>   
+                    <!--<div class="form-check text-center">
+                      {{ form.remember(class="form-check-input") }}
+                      {{ form.remember.label(class="form-check-label") }}
+                    </div>-->           
+                    <div class="form-group">
+                      {{ form.submit(class="btn btn-primary btn-user btn-block") }}
+                    </div> 
+                                  
+                  </form>
+                  <hr>
+                  <div class="text-center">
+                    <a class="small" href="#">Mot de passe oublié?</a>
+                  </div>
+                </div>
+              </div>
+            <!--</div>-->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+      
+
+
+{% endblock layout %}

@@ -1,0 +1,139 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container">
+  <div class="card o-hidden border-0 shadow-lg my-5">
+    <div class="card-body p-0">
+      <!-- Nested Row within Card Body -->
+      <div class="p-5">
+        <div class="text-center">
+          <h1 class="h4 text-gray-900 mb-4">Utilisateur</h1>
+        </div>
+        <form class="user" method="POST" action="">
+          {{ form.hidden_tag() }}
+
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              {{ form.firstName.label(class="form-control-label") }}
+              {% if form.firstName.errors %}
+              {{ form.firstName(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.firstName.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.firstName(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>
+            <div class="col-sm-6">
+              {{ form.lastName.label(class="form-control-label") }}
+              {% if form.lastName.errors %}
+              {{ form.lastName(class="form-control form-control-lg is-invalid") }}
+              <div class="invalid-feedback">
+                {% for error in form.lastName.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+              {{ form.lastName(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            {{ form.email.label(class="form-control-label") }}
+            {% if form.email.errors %}
+            {{ form.email(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.email.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.email(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.company.label(class="form-control-label") }}
+            {% if form.company.errors %}
+            {{ form.company(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.company.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.company(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ form.site.label(class="form-control-label") }}
+            {% if form.site.errors %}
+            {{ form.site(class="form-control form-control-lg is-invalid") }}
+            <div class="invalid-feedback">
+              {% for error in form.site.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% else %}
+            {{ form.site(class="form-control form-control-lg") }}
+            {% endif %}
+          </div>
+          <br>
+          <div class="float-right">
+            <a href="{{ url_for('main.sysuser') }}" class="btn btn-secondary btn-icon-split" type="reset">
+              <span class="icon text-white-50">
+                <i class="fas fa-arrow-left"></i>
+              </span>
+              <span class="text">Retour</span>
+            </a>
+            <a class="btn btn-success btn-icon-split">
+              <span class="icon text-white-50">
+                <i class="fas fa-check"></i>
+              </span>
+              {{ form.submit(class="btn btn-success btn-icon-split") }}
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#company').select2();
+    $('#site').select2();
+  });
+
+  let company_select = document.getElementById('company');
+  let site_select = document.getElementById('site');
+
+  company_select.onchange = function () {
+    company = company_select.value;
+    fetch('/sit/' + company).then(function (response) {
+      let optionHTML = '';
+      response.json().then(function (data) {
+        for (let site of data.sites) {
+          optionHTML += '<option value="' + site.id + '">' + site.name + '</option>';
+        }
+        site_select.innerHTML = optionHTML;
+      });
+    });
+  }
+</script>
+{% endblock JsAfterTemplate %}

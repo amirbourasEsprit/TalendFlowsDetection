@@ -1,0 +1,162 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block StyleAfterTemplate %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+        <div class="container">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+              <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                    <div class="p-5">
+                      <ul class="nav nav-tabs">
+                      </ul>
+                      <p></p>
+                      <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Vis à Vis Certifications</h1>
+                      </div>
+                      <form class="user"  method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                          {{ form.sys_user1.label(class="form-control-label") }}      
+                          {% if form.sys_user1.errors %}
+                              {{ form.sys_user1(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                  {% for error in form.sys_user1.errors %}
+                                      <span>{{ error }}</span>
+                                  {% endfor %}
+                              </div>
+                          {% else %}
+                              {{ form.sys_user1(class="form-control form-control-lg", multiple="multiple") }}
+                          {% endif %}
+                        </div>
+                        <div class="form-group">
+                          {{ form.supp_user1.label(class="form-control-label") }}      
+                          {% if form.supp_user1.errors %}
+                              {{ form.supp_user1(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                  {% for error in form.supp_user1.errors %}
+                                      <span>{{ error }}</span>
+                                  {% endfor %}
+                              </div>
+                          {% else %}
+                              {{ form.supp_user1(class="form-control form-control-lg", multiple="multiple") }}
+                          {% endif %}
+                        </div>
+                        <ul class="nav nav-tabs">
+                        </ul>
+                        <p></p>
+                        <div class="text-center">
+                          <h1 class="h4 text-gray-900 mb-4">Vis à Vis manuel qualité</h1>
+                        </div>
+                          <div class="form-group">
+                            {{ form.sys_user2.label(class="form-control-label") }}      
+                            {% if form.sys_user2.errors %}
+                                {{ form.sys_user2(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.sys_user2.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.sys_user2(class="form-control form-control-lg", multiple="multiple") }}
+                            {% endif %}
+                          </div>
+                          <div class="form-group">
+                            {{ form.supp_user2.label(class="form-control-label") }}      
+                            {% if form.supp_user2.errors %}
+                                {{ form.supp_user2(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.supp_user2.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.supp_user2(class="form-control form-control-lg", multiple="multiple") }}
+                            {% endif %}
+                          </div>
+                          <ul class="nav nav-tabs">
+                          </ul>
+                          <p></p>
+                          <div class="text-center">
+                            <h1 class="h4 text-gray-900 mb-4">Vis à Vis réclamations</h1>
+                          </div>
+                            <div class="form-group">
+                              {{ form.sys_user3.label(class="form-control-label") }}      
+                              {% if form.sys_user3.errors %}
+                                  {{ form.sys_user3(class="form-control form-control-lg is-invalid") }}
+                                  <div class="invalid-feedback">
+                                      {% for error in form.sys_user3.errors %}
+                                          <span>{{ error }}</span>
+                                      {% endfor %}
+                                  </div>
+                              {% else %}
+                                  {{ form.sys_user3(class="form-control form-control-lg", multiple="multiple") }}
+                              {% endif %}
+                            </div>
+                            <div class="form-group">
+                              {{ form.supp_user3.label(class="form-control-label") }}      
+                              {% if form.supp_user3.errors %}
+                                  {{ form.supp_user3(class="form-control form-control-lg is-invalid") }}
+                                  <div class="invalid-feedback">
+                                      {% for error in form.supp_user3.errors %}
+                                          <span>{{ error }}</span>
+                                      {% endfor %}
+                                  </div>
+                              {% else %}
+                                  {{ form.supp_user3(class="form-control form-control-lg", multiple="multiple") }}
+                              {% endif %}
+                            </div>             
+                            <br>
+                              <div class="float-right">
+                                <a href="{{ url_for('supp.supplier_profile', supplier_id=supplier_id) }}" class="btn btn-secondary btn-icon-split" type="reset">
+                                  <span class="icon text-white-50">
+                                    <i class="fas fa-arrow-left"></i>
+                                  </span>
+                                  <span class="text">Retour</span>
+                                </a>
+                                <a class="btn btn-success btn-icon-split">
+                                  <span class="icon text-white-50">
+                                    <i class="fas fa-check"></i>
+                                  </span>
+                                  {{ form.submit(class="btn btn-success btn-icon-split") }}
+                                </a>
+                              </div>
+                      </form>
+                    </div>
+              </div>
+            </div>
+        
+        </div>
+        <!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+      $('#sys_user1').select2();
+  });
+  $(document).ready(function() {
+      $('#supp_user1').select2();
+  });
+  $(document).ready(function() {
+      $('#sys_user2').select2();
+  });
+  $(document).ready(function() {
+      $('#supp_user2').select2();
+  }); 
+  $(document).ready(function() {
+      $('#sys_user3').select2();
+  });
+  $(document).ready(function() {
+      $('#supp_user3').select2();
+  }); 
+</script>
+{% endblock JsAfterTemplate %}

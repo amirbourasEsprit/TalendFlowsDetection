@@ -1,0 +1,88 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container">
+	<div class="card shadow mb-4">
+		<div class="team-single">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+			{% for category, message in messages %}
+			<div class="alert alert-{{ category }}" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+				{{ message }}
+			</div>
+			{% endfor %}
+			{% endif %}
+			{% endwith %}
+			<div class="card-header py-3">
+				<h4 class="m-0 font-weight-bold text-orange">Votre profile</h4>
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-lg-8 col-md-7">
+						<ul class="list-style9 no-margin">
+							<li style="list-style: none;">
+								<i class="text-primary fas fa-id-badge"></i>
+								<strong class="margin-10px-left text-primary">Identifiant unique: </strong> {{
+								current_user.id }}
+							</li>
+							<br>
+							<li style="list-style: none;">
+								<i class="text-primary fas fa-user"></i>
+								<strong class="margin-10px-left text-primary">Nom Complet: </strong> {{
+								current_user.firstName }} {{ current_user.lastName }}
+							</li>
+							<br>
+							<li style="list-style: none;">
+								<i class=" text-primary fas fa-mobile-alt text-purple"></i>
+								<strong class="margin-10px-left text-primary">Téléphne: </strong> {{ current_user.phone
+								}}
+							</li>
+							<br>
+							<li style="list-style: none;">
+								<i class="text-primary fas fa-envelope text-pink"></i>
+								<strong class="margin-10px-left text-primary">Email: </strong> {{ current_user.email }}
+							</li>
+						</ul>
+					</div>
+					<div class="col-lg-4 col-md-5 xs-margin-30px-bottom">
+						{% if current_user.type=='sysuser' %}
+							<div class="team-single-img">
+								{% if not company.logo %}
+								<div> </div>
+								{% else %}
+								<img class="img-responsive" style="width:100%;" src="{{ url_for('static', filename='/'.join(['img', 'CompanyLogo', company.logo ])) }}">
+								{% endif %}
+							</div>
+						{% elif current_user.type=='suppuser' %}
+							<div class="team-single-img">
+								{% if not supplier.logo %}
+								<div> </div>
+								{% else %}
+								<img class="img-responsive" style="width:50%;" src="{{ url_for('static', filename='/'.join(['img', 'SupplierLogo', supplier.logo ])) }}">
+								{% endif %}
+							</div>
+						{% endif %}
+					</div>
+				</div>
+				<a href="{{ url_for('admin.update_profile', user_id=current_user.id) }}"
+					class="btn btn-primary btn-icon-split float-right">
+					<span class="icon text-white-50">
+						<i class="fas fa-pen"></i>
+					</span>
+					<span class="text">Modifier les informations</span>
+				</a>
+			</div>
+
+		</div>
+	</div>
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}

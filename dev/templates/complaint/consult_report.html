@@ -1,0 +1,457 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+	@media print {
+		body * {
+			visibility: hidden;
+		}
+
+		.print-container,
+		.print-container * {
+			visibility: visible;
+		}
+	}
+
+	/* Table actions icons*/
+	table.table td a.view {
+		color: #03A9F4;
+	}
+
+	table.table td a.edit {
+		color: #FFC107;
+	}
+
+	table.table td a.delete {
+		color: #E34724;
+	}
+
+	table.table td i.done {
+		color: #24E334;
+	}
+
+	.hint-text {
+		float: left;
+		margin-top: 6px;
+		font-size: 95%;
+	}
+</style>
+
+{% endblock StyleAfterTemplate %}
+
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container">
+	<div class="card shadow mb-4">
+		<div class="team-single print-container" id="for_print">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+			{% for category, message in messages %}
+			<div class="alert alert-{{ category }}" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+				{{ message }}
+			</div>
+			{% endfor %}
+			{% endif %}
+			{% endwith %}
+			<div class="card-header py-3">
+				<h2 class="font-size38 sm-font-size32 xs-font-size30 text-center">Rapport 8D</h2>
+			</div>
+			<div class="card-body">
+				<div class="contact-info-section margin-40px-tb">
+					<ul class="list-style9 no-margin">
+						<li style="list-style: none;">
+							<div class="row md-2">
+								<div class="col-md-5 col-3">
+									<strong class="margin-10px-left text-orange">Numéro Réclamation: </strong> {{
+									complaint.number }}
+								</div>
+								<div class="col-md-3 col-3"> </div>
+								<div class="col-md-0 col-0">
+									<strong class="margin-10px-left text-orange">Fournisseur: </strong> {{
+									select_supp(complaint.supplier_id) }}
+								</div>
+							</div>
+						</li>
+						<li style="list-style: none;">
+							<div class="row md-2">
+								<div class="col-md-5 col-3">
+									<strong class="margin-10px-left text-orange">Rsponsable: </strong> {{
+									select_user(complaint.sysuser_id) }}
+								</div>
+								<div class="col-md-3 col-3"> </div>
+								<div class="col-md-0 col-0">
+									<strong class="margin-10px-left text-orange">Date de réclamation: </strong> {{
+									complaint.submissionDate.strftime('%Y-%m-%d') }}
+								</div>
+							</div>
+						</li>
+						<li style="list-style: none;">
+							<div class="row md-2">
+								<div class="col-md-5 col-3">
+									<strong class="margin-10px-left text-orange">Site: </strong> {{
+									select_site(select_user(complaint.sysuser_id).site_id) }}
+								</div>
+								<div class="col-md-3 col-3"> </div>
+								<div class="col-md-0 col-0">
+									<strong class="margin-10px-left text-orange">Date de début: </strong> {{
+									rapport.startDate.strftime('%Y-%m-%d') }}
+								</div>
+							</div>
+						</li>
+						<li style="list-style: none;">
+							<div class="row md-2">
+								<div class="col-md-5 col-3">
+									<strong class="margin-10px-left text-orange">Entreprise: </strong> {{
+									select_company(select_site(select_user(complaint.sysuser_id).site_id).id) }}
+								</div>
+								<div class="col-md-3 col-3"> </div>
+								<div class="col-md-0 col-0">
+									<strong class="margin-10px-left text-orange">Date de fin: </strong>
+									{% if rapport.closeDate %}
+									{{ rapport.closeDate.strftime('%Y-%m-%d') }}
+									{% endif %}
+								</div>
+							</div>
+						</li>
+					</ul>
+					{% if complaint.status=='3D' or complaint.status=='5D' or complaint.status=='8D' or
+					complaint.status=='closed' %}
+					<hr style="height: 3px; background-color:grey; border: none;">
+					<strong class="margin-10px-left text-orange">D1 Les membres de l'équipe: </strong>
+					<div class="table-responsive-sm mt-4">
+						<table class="table table-hover " id="myTable">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col">Nom complet</th>
+									<th scope="col">Fonction</th>
+								</tr>
+							</thead>
+							<tbody id="myTable">
+								{% for member in members %}
+								<tr>
+									<td>{{ member.firstName }} {{ member.lastName }}</td>
+									<td>{{ member.function }}</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<hr style="height: 3px; background-color:grey; border: none;">
+					<strong class="margin-10px-left text-orange">D2 Description du problème: </strong>
+					<div class="p-4">
+						<div class="card mb-4">
+							<div class="card-body">
+								{{ rapport.problemDescription }}
+							</div>
+						</div>
+					</div>
+					{% for attachement in attachements %}
+					<img src="{{ url_for('static', filename='/'.join(['img', 'Attachement8D', attachement.name ])) }}">
+					{% endfor %}
+					<hr style="height: 3px; background-color:grey; border: none;">
+					<strong class="margin-10px-left text-orange">D3 Les actions immédiates: </strong>
+					<div class="table-responsive-sm mt-4">
+						<table class="table table-hover " id="myTable">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col">Action</th>
+									<th scope="col">Responsable</th>
+									<th scope="col">Date</th>
+									<th scope="col">Fini</th>
+									<th scope="col">Vérifié par</th>
+									<th scope="col">Date de vérification</th>
+								</tr>
+							</thead>
+							<tbody id="myTable">
+								{% for action in actions %}
+								{% if action.type == "3D" %}
+								<tr>
+									<td>{{ action.description }}</td>
+									<td>{{ action.owner }}</td>
+									<td>{{ action.date.strftime('%Y-%m-%d') }}</td>
+									{% if not action.done %}
+										{% if current_user.type=='sysuser' and 'complaint_level2' in roles %}
+										<td>
+											<a href="" class="btn btn-primary btn" data-toggle="modal"
+												data-target="#doneModal1-{{ action.id }}">
+												<span class="text">Oui</span>
+											</a>
+										</td>
+										{% else %}
+										<td>en cours ...</td>
+										{% endif %}
+									<td></td>
+									<td></td>
+									{% else %}
+									<td>
+										<div><i class="material-icons done">&#xE876;</i></div>
+									</td>
+									<td>{{ select_user(action.verifiedBy) }}</td>
+									<td>{{ action.verifiedDate.strftime('%Y-%m-%d') }}</td>
+									{% endif %}
+								</tr>
+								{% endif %}
+								<!-- Verify Modal -->
+								<div class="modal fade" id="doneModal1-{{ action.id }}" tabindex="-1" role="dialog"
+									aria-labelledby="doneModal1Label" aria-hidden="true">
+									<div class="modal-dialog" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title" id="doneModal1Label">avez-vous terminé cette
+													action ?</h5>
+												<button type="button" class="close" data-dismiss="modal"
+													aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-secondary"
+													data-dismiss="modal">Annuler</button>
+												<form
+													action="{{ url_for('comp.done_action', report_id=rapport.id, action_id=action.id) }}"
+													method="POST">
+													<input class="btn btn-success" type="submit" value="Oui">
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					{% endif %}
+					{% if complaint.status=='5D' or complaint.status=='8D' or complaint.status=='closed' %}
+					<hr style="height: 3px; background-color:grey; border: none;">
+					<strong class="margin-10px-left text-orange">D4 Les causes racines: </strong>
+					<div class="table-responsive-sm mt-4">
+						<table class="table table-hover " id="myTable">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col">Cause racine</th>
+								</tr>
+							</thead>
+							<tbody id="myTable">
+								{% for cause in causes %}
+								<tr>
+									<td>{{ cause.description }}</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					<hr style="height: 3px; background-color:grey; border: none;">
+					<strong class="margin-10px-left text-orange">D5 Les actions corréctives: </strong>
+					<div class="table-responsive-sm mt-4">
+						<table class="table table-hover " id="myTable">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col">Action</th>
+									<th scope="col">Type</th>
+									<th scope="col">Responsable</th>
+									<th scope="col">Date</th>
+									<th scope="col">Fini</th>
+									<th scope="col">Vérifié par</th>
+									<th scope="col">Date de vérification</th>
+								</tr>
+							</thead>
+							<tbody id="myTable">
+								{% for action in actions %}
+								{% if action.type == "5D" %}
+								<tr>
+									<td>{{ action.description }}</td>
+									<td>{{ action.type5D }}</td>
+									<td>{{ action.owner }}</td>
+									<td>{{ action.date.strftime('%Y-%m-%d') }}</td>
+									{% if not action.done %}
+										{% if current_user.type=='sysuser' and 'complaint_level2' in roles %}
+										<td>
+											<a href="" class="btn btn-primary btn" data-toggle="modal"
+												data-target="#doneModal1-{{ action.id }}">
+												<span class="text">Oui</span>
+											</a>
+										</td>
+										{% else %}
+										<td>en cours ...</td>
+										{% endif %}
+									<td></td>
+									<td></td>
+									{% else %}
+									<td>
+										<div><i class="material-icons done">&#xE876;</i></div>
+									</td>
+									<td>{{ select_user(action.verifiedBy) }}</td>
+									<td>{{ action.verifiedDate.strftime('%Y-%m-%d') }}</td>
+									{% endif %}
+								</tr>
+								{% endif %}
+								<!-- Verify Modal -->
+								<div class="modal fade" id="doneModal2-{{ action.id }}" tabindex="-1" role="dialog"
+									aria-labelledby="doneModal2Label" aria-hidden="true">
+									<div class="modal-dialog" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title" id="doneModal2Label">avez-vous terminé cette
+													action ?</h5>
+												<button type="button" class="close" data-dismiss="modal"
+													aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-secondary"
+													data-dismiss="modal">Annuler</button>
+												<form
+													action="{{ url_for('comp.done_action', report_id=rapport.id, action_id=action.id) }}"
+													method="POST">
+													<input class="btn btn-success" type="submit" value="Oui">
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					{% endif %}
+					{% if complaint.status=='8D' or complaint.status=='closed' %}
+					<hr style="height: 3px; background-color:grey; border: none;">
+					<strong class="margin-10px-left text-orange">D7 Les actions d'amélioration: </strong>
+					<div class="table-responsive-sm mt-4">
+						<table class="table table-hover " id="myTable">
+							<thead class="thead-light">
+								<tr>
+									<th scope="col">Action</th>
+									<th scope="col">Responsable</th>
+									<th scope="col">Date</th>
+									<th scope="col">Fini</th>
+									<th scope="col">Vérifié par</th>
+									<th scope="col">Date de vérification</th>
+								</tr>
+							</thead>
+							<tbody id="myTable">
+								{% for action in actions %}
+								{% if action.type == "7D" %}
+								<tr>
+									<td>{{ action.description }}</td>
+									<td>{{ action.owner }}</td>
+									<td>{{ action.date.strftime('%Y-%m-%d') }}</td>
+									{% if not action.done %}
+										{% if current_user.type=='sysuser' and 'complaint_level2' in roles %}
+										<td>
+											<a href="" class="btn btn-primary btn" data-toggle="modal"
+												data-target="#doneModal1-{{ action.id }}">
+												<span class="text">Oui</span>
+											</a>
+										</td>
+										{% else %}
+										<td>en cours ...</td>
+										{% endif %}
+									<td></td>
+									<td></td>
+									{% else %}
+									<td>
+										<div><i class="material-icons done">&#xE876;</i></div>
+									</td>
+									<td>{{ select_user(action.verifiedBy) }}</td>
+									<td>{{ action.verifiedDate.strftime('%Y-%m-%d') }}</td>
+									{% endif %}
+								</tr>
+								{% endif %}
+								<!-- done Modal -->
+								<div class="modal fade" id="doneModal3-{{ action.id }}" tabindex="-1" role="dialog"
+									aria-labelledby="doneModal3Label" aria-hidden="true">
+									<div class="modal-dialog" role="document">
+										<div class="modal-content">
+											<div class="modal-header">
+												<h5 class="modal-title" id="doneModal3Label">avez-vous terminé cette
+													action ?</h5>
+												<button type="button" class="close" data-dismiss="modal"
+													aria-label="Close">
+													<span aria-hidden="true">&times;</span>
+												</button>
+											</div>
+											<div class="modal-footer">
+												<button type="button" class="btn btn-secondary"
+													data-dismiss="modal">Annuler</button>
+												<form
+													action="{{ url_for('comp.done_action', report_id=rapport.id, action_id=action.id) }}"
+													method="POST">
+													<input class="btn btn-success" type="submit" value="Oui">
+												</form>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					{% endif %}
+					{% if rapport.closed %}
+					<hr style="height: 3px; background-color:grey; border: none;">
+					<strong class="margin-10px-left text-orange">D8 Clôture: </strong>
+					<div class="card mb-4">
+						<div class="card-body">
+							La réclamation numéro {{ complaint.number }} est clôturée en {{
+							rapport.closeDate.strftime('%Y-%m-%d') }} par l'équipe mentionnée en D1
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="float-right">
+		<a href="{{ url_for('comp.list_report8D') }}" class="btn btn-secondary btn-icon-split">
+			<span class="icon text-white-50">
+				<i class="fas fa-arrow-left"></i>
+			</span>
+			<span class="text">Retour</span>
+		</a>
+		<a href="" onclick="print_page('for_print');" class="btn btn-primary btn-icon-split">
+			<span class="icon text-white-50">
+				<i class="fas fa-print"></i>
+			</span>
+			<span class="text">Imprimer</span>
+		</a>
+	</div>
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script language="JavaScript">
+	function print_page(obj) {
+		var prtContent = document.getElementById(obj);
+		var WinPrint = window.open('', '', 'left=0,top=0,width=8000,height=9000,toolbar=0,scrollbars=0,status=0');
+		WinPrint.document.write('<html><head>');
+		WinPrint.document.write('<link href="{{ url_for("static", filename="vendor/fontawesome-free/css/all.min.css") }}" rel="stylesheet" type="text/css">');
+		WinPrint.document.write('<link href="{{ url_for("static", filename="css/fonts.googleapis.css") }}" rel="stylesheet">');
+		WinPrint.document.write('<link href="{{ url_for("static", filename="css/style.min.css") }}" rel="stylesheet">');
+		WinPrint.document.write('<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />');
+		WinPrint.document.write('<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">');
+		WinPrint.document.write('<style>');
+		WinPrint.document.write('table.table td a.view { color: #03A9F4; } table.table td a.edit { color: #FFC107; } table.table td a.delete { color: #E34724; } table.table td i.done { color: #24E334; } .hint-text { float: left; margin-top: 6px; font-size: 95%; }');
+		WinPrint.document.write('</style>');
+		WinPrint.document.write('</head><body>');
+		WinPrint.document.write(prtContent.innerHTML);
+		WinPrint.document.write('</body></html>');
+		WinPrint.document.close();
+		WinPrint.window.focus();
+		WinPrint.window.print();
+		return true;
+	}
+</script>
+{% endblock JsAfterTemplate %}

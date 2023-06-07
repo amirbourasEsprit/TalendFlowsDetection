@@ -1,0 +1,119 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block StyleAfterTemplate %}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+        <div class="container">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+              <div class="card-body p-0">
+                <!-- Nested Row within Card Body -->
+                    <div class="p-5">
+                      <ul class="nav nav-tabs">
+                      </ul>
+                      <p></p>
+                      <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Contact</h1>
+                      </div>
+                      <form class="user"  method="POST" action="">
+                        {{ form.hidden_tag() }}
+                    
+                        <div class="form-group row">
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.firstName.label(class="form-control-label") }}      
+                              {% if form.firstName.errors %}
+                              {{ form.firstName(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.firstName.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %}
+                                {{ form.firstName(class="form-control form-control-lg") }}
+                            {% endif %}
+                          </div>
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.lastName.label(class="form-control-label") }}      
+                              {% if form.lastName.errors %}
+                              {{ form.lastName(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.lastName.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %}
+                                {{ form.lastName(class="form-control form-control-lg") }}
+                            {% endif %}
+                          </div>
+                        </div>
+                          <div class="form-group row">
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.function.label(class="form-control-label") }}      
+                              {% if form.function.errors %}
+                              {{ form.function(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.function.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %}
+                                {{ form.function(class="form-control form-control-lg") }}
+                            {% endif %}
+                          </div>
+                          <div class="col-sm-6 mb-3 mb-sm-0">
+                            {{ form.phone.label(class="form-control-label") }}      
+                              {% if form.phone.errors %}
+                              {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                              <div class="invalid-feedback">
+                                {% for error in form.phone.errors %}
+                                  <span>{{ error }}</span>
+                                {% endfor %}
+                              </div>
+                              {% else %}
+                                {{ form.phone(class="form-control form-control-lg") }}
+                            {% endif %}
+                          </div>
+                        </div>
+                          <div class="form-group row">
+                            <div class="col-sm-6 mb-3 mb-sm-0">
+                              {{ form.email.label(class="form-control-label") }}      
+                                {% if form.email.errors %}
+                                {{ form.email(class="form-control form-control-lg is-invalid") }}
+                                <div class="invalid-feedback">
+                                  {% for error in form.email.errors %}
+                                    <span>{{ error }}</span>
+                                  {% endfor %}
+                                </div>
+                                {% else %}
+                                  {{ form.email(class="form-control form-control-lg") }}
+                              {% endif %}
+                            </div>
+                          </div>
+                        
+                         
+                             
+                     
+                        <div class="form-group row ">                          
+                          <div class="col-sm-2 mb-3 mb-sm-0">
+                            <a href="{{ url_for('main.supplier_profile',supplier_id=supplier_id) }}" class="btn btn-secondary btn-lg btn-user btn-block" type="reset">
+                              <span class="text">Retour</span>
+                            </a>
+                          </div>
+                          <div class="col-sm-2">
+                            {{ form.submit(class="btn btn-primary btn-user btn-block") }}
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+              </div>
+            </div>
+        
+        </div>
+        <!-- End of Main Content -->
+
+{% endblock content %}

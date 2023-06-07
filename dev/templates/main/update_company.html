@@ -1,0 +1,319 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+{% set f2 = myDict['f2'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+  /* Table actions icons*/
+  table.table td a.view {
+    color: #03A9F4;
+  }
+
+  table.table td a.edit {
+    color: #FFC107;
+  }
+
+  table.table td a.delete {
+    color: #E34724;
+  }
+
+
+  .hint-text {
+    float: left;
+    margin-top: 6px;
+    font-size: 95%;
+  }
+</style>
+
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container">
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <div class="d-inline p-2">
+        <spam class="m-0 font-weight-bold text-primary">COFAT - Modification des informations de la société</spam>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }}" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+      <!-- Nested Row within Card Body -->
+      <div class="p-5">
+        <h5 class="m-2 font-weight-bold text-black">Informations Générales</h5>
+        <form class="user" method="POST" action="">
+          {{ form.hidden_tag() }}
+          <div class="m-9 form-row">
+            <div class="col-sm-2 mt-4 ml-4">
+              {% if not company.logo %}
+              <img class="img-responsive" style="width:100%;" src="https://via.placeholder.com/150">
+              {% else %}
+              <img class="img-responsive" style="width:100%;"
+                src="{{ url_for('static', filename='/'.join(['img', 'CompanyLogo', company.logo ])) }}">
+              {% endif %}
+              <div class="m-3 form-row">
+                <a href="" class="btn btn-primary" data-toggle="modal" data-target="#logoModal">Modifier logo</a>
+              </div>
+            </div>
+            <div class="col-sm ml-4">
+              <div class="form-row mt-2">
+                <div class="col-sm ml-3">
+                  {{ form.uniqueIdentifier.label(class="form-control-label") }}
+                  {% if form.uniqueIdentifier.errors %}
+                  {{ form.uniqueIdentifier(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.uniqueIdentifier.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.uniqueIdentifier(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
+                <div class="col-sm ml-3">
+                  {{ form.name.label(class="form-control-label") }}
+                  {% if form.name.errors %}
+                  {{ form.name(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.name.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.name(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-row mt-2">
+                <div class="col-sm ml-3">
+                  {{ form.taxRegisration.label(class="form-control-label") }}
+                  {% if form.taxRegisration.errors %}
+                  {{ form.taxRegisration(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.taxRegisration.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.taxRegisration(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
+                <div class="col-sm ml-3">
+                  {{ form.phone.label(class="form-control-label") }}
+                  {% if form.phone.errors %}
+                  {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.phone.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.phone(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
+                <div class="col-sm ml-3">
+                  {{ form.fax.label(class="form-control-label") }}
+                  {% if form.fax.errors %}
+                  {{ form.fax(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.fax.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.fax(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
+              </div>
+              <div class="form-row mt-2">
+                <div class="col-sm ml-3">
+                  {{ form.adresse.label(class="form-control-label") }}
+                  {% if form.adresse.errors %}
+                  {{ form.adresse(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.adresse.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.adresse(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
+                <div class="col-sm ml-3">
+                  {{ form.city.label(class="form-control-label") }}
+                  {% if form.city.errors %}
+                  {{ form.city(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.city.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.city(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
+                <div class="col-sm ml-3">
+                  {{ form.country.label(class="form-control-label") }}
+                  {% if form.country.errors %}
+                  {{ form.country(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                    {% for error in form.country.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                  </div>
+                  {% else %}
+                  {{ form.country(class="form-control form-control-lg") }}
+                  {% endif %}
+                </div>
+              </div>
+              <br>
+              <div class="float-right">
+                <a href="{{ url_for('.company') }}" class="btn btn-secondary btn-icon-split" type="reset">
+                  <span class="icon text-white-50">
+                    <i class="fas fa-arrow-left"></i>
+                  </span>
+                  <span class="text">Retour</span>
+                </a>
+                <a class="btn btn-success btn-icon-split">
+                  <span class="icon text-white-50">
+                    <i class="fas fa-check"></i>
+                  </span>
+                  {{ form.submit(class="btn btn-success btn-icon-split") }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </form>
+        <!-- logo Modal -->
+        <div class="modal fade" id="logoModal" tabindex="-1" role="dialog" aria-labelledby="logoModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="p-2">
+                <form action="{{ url_for('main.update_logo', company_id=company_id) }}" method="POST"
+                  enctype=multipart/form-data>
+                  {{ f2.hidden_tag() }}
+                  <div class="modal-header">
+                    {{ f2.file.label(class="form-control-label") }}
+                    {% if f2.file.errors %}
+                    {{ f2.file(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                      {% for error in f2.file.errors %}
+                      <span>{{ error }}</span>
+                      {% endfor %}
+                    </div>
+                    {% else %}
+                    {{ f2.file(class="form-control form-control-lg", type="file") }}
+                    {% endif %}
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    {{ f2.submit(class="btn btn-success") }}
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr style="height: 3px; background-color:grey; border: none;">
+        <h5 class="m-2 font-weight-bold text-black">Liste des sites</h5>
+        <a href="{{ url_for('main.add_site', company_id=company_id) }}" class="btn btn-success btn float-right">
+          <span class="icon text-white-50">
+            <i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+          </span>
+          <span class="text">Ajouter un site</span>
+        </a>
+        <div class="table-responsive-sm mt-4">
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+              <div id="dataTable_filter" class="dataTables_filter">
+                <label>Search:<input id="myInput" type="text" class="form-control form-control-sm float-right"
+                    placeholder="" aria-controls="dataTable"></label>
+              </div>
+            </div>
+          </div>
+          <table class="table table-hover " id="myTable">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Nom</th>
+                <th scope="col">adresse</th>
+                <th scope="col">Téléphone</th>
+                <th scope="col">Fax</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody id="myTable">
+              {% for site in sites %}
+              <tr>
+                <td>{{ site.name }}</td>
+                <td>{{ site.adresse }}</td>
+                <td>{{ site.phone }}</td>
+                <td>{{ site.fax }}</td>
+                <td>
+                  <a href="{{ url_for('main.update_site', company_id=company_id, site_id=site.id) }}" class="edit"
+                    title="Edit" data-toggle="tooltip"><i class="material-icons">&#xE254;</i></a>
+                  <a href="" class="delete" data-toggle="modal" data-target="#deleteModal-{{ site.id }}"><i
+                      class="material-icons">&#xE872;</i></a>
+                  <!-- Modal -->
+                  <div class="modal fade" id="deleteModal-{{ site.id }}" tabindex="-1" role="dialog"
+                    aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="deleteModalLabel">Voulez vous supprimer ce site?</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                          <form action="{{ url_for('main.delete_site', company_id=company_id, site_id=site.id) }}"
+                            method="POST">
+                            <input class="btn btn-danger" type="submit" value="Supprimer">
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+        </div>
+        </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $('#ministry').select2();
+  });
+</script>
+{% endblock JsAfterTemplate %}

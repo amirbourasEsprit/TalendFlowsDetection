@@ -1,0 +1,104 @@
+{% extends "page.html" %}
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+  /* Table actions icons*/
+  table.table td a.view {
+    color: #03A9F4;
+  }
+
+  table.table td a.edit {
+    color: #FFC107;
+  }
+
+  table.table td a.delete {
+    color: #E34724;
+  }
+</style>
+{% endblock StyleAfterTemplate %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="card shadow mb-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      {{ message | safe }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <div class="card-header py-2">
+
+      <div class="d-inline ">
+        <a href="{{url_for('cost.view_declarations')}}" class="btn  btn-icon btn-md">
+          <span class="icon  text-black-50">
+            <i class="fas fa-arrow-left"></i>
+          </span>
+        </a>
+      </div>
+      <div class="d-inline p-2">
+        <span class="h5 font-weight-bold text-primary">Ajout d'une nouvelle déclaration de coûts</span>
+
+      </div>
+
+    </div>
+    <div class="card-body">
+
+      <form method="POST" action="#">
+        {{ form.hidden_tag() }}
+        <fieldset>
+        <div class="form-row">
+          <div class="col-12 col-md-3 mr-4">
+            {{ form.complaint.label(class="form-control-label") }}
+            {{ form.complaint(class="form-control",id="complaintSelect") }}
+          </div>
+          <div class="col-12 col-md-3 mr-3">
+            {{ form.supplier.label(class="form-control-label") }}
+            {{ form.supplier(class="form-control",id="supplierField") }}
+          </div>
+          <div class="col-12 col-md-2 mt-1">
+            <label class="form-control-label"></label>
+            {{ form.submit(class="btn btn-success btn-block")}}
+          </div>
+        </div>
+  
+        </fieldset>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+
+  function setSupplier () {
+    let complaintSelect = document.getElementById("complaintSelect");
+    complaintID = complaintSelect.value;
+    console.log(complaintID)
+    fetch("{{url_for('cost.getComplaintSupplier',complaint_id='')}}" + complaintID).then(function (response) {
+      supplier = document.getElementById("supplierField");
+      response.json().then(function (data) {
+        supplier.value = data.name;
+      });
+    });
+  }
+  setSupplier();
+  complaintSelect.addEventListener("change", setSupplier, false)
+</script>
+{% endblock JsAfterTemplate %}

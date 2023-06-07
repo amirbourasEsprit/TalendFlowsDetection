@@ -1,0 +1,337 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %}
+
+{% block StyleAfterTemplate %}
+    <style>
+        @media print {
+			body * {
+				visibility: hidden;
+			}
+			.print-container, .print-container * {
+				visibility: visible;
+			}
+		}
+    </style>
+
+    {% endblock StyleAfterTemplate %}
+
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container">
+	{% if not complaint.report8D_id and current_user.type=='suppuser' and 'complaint_level2' in roles %}
+	<div class="">
+		<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#reportModal">
+			<span class="icon text-white-50">
+				<i class="fas fa-file-alt"></i>
+			</span>
+			<span class="text">Traitement 8D</span>
+		</a>
+	</div>
+	{% endif %}
+	<br>
+	<br>
+	<div class="card shadow mb-4">		
+		<div class="team-single print-container" id="for_print">			
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+			{% for category, message in messages %}
+			<div class="alert alert-{{ category }}" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+				{{ message }}
+			</div>
+			{% endfor %}
+			{% endif %}
+			{% endwith %}
+				<div class="card-header py-3">
+					<h2 class="font-size38 sm-font-size32 xs-font-size30 text-center">Rapport Réclamation</h2> 
+				</div>
+				<div class="card-body">
+					<div class="contact-info-section margin-40px-tb">
+						<ul class="list-style9 no-margin">
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left text-orange">Numéro Réclamation:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.number }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Date de soumission:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.submissionDate.strftime('%Y-%m-%d') }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row md-2">
+									<div class="col-md-5 col-3">
+										<strong class="margin-10px-left xs-margin-four-left text-pink">De:</strong>
+									</div>
+									<div class="col-md-4 col-3">
+										<strong class="margin-10px-left xs-margin-four-left text-pink">Mr/Mme:</strong>
+									</div>
+									<div class="col-md-3 col-3">
+										<p>{{ select_user(complaint.sysuser_id) }}</p>
+									</div>
+								</div>
+							</li>
+							<li style="list-style: none;">
+								<div class="row md-2">
+									<div class="col-md-5 col-3">
+										<strong class="margin-10px-left xs-margin-four-left text-pink"> </strong>
+									</div>
+									<div class="col-md-4 col-3">
+										<strong class="margin-10px-left xs-margin-four-left text-pink">E-mail:</strong>
+									</div>
+									<div class="col-md-3 col-3">
+										<p>{{ select_user(complaint.sysuser_id).email }}</p>
+									</div>
+								</div>
+							</li>
+							<li style="list-style: none;">
+								<div class="row md-2">
+									<div class="col-md-5 col-3">
+										<strong class="margin-10px-left xs-margin-four-left text-pink"> </strong>
+									</div>
+									<div class="col-md-4 col-3">
+										<strong class="margin-10px-left xs-margin-four-left text-pink">Téléphone:</strong>
+									</div>
+									<div class="col-md-3 col-3">
+										<p>{{ select_user(complaint.sysuser_id).phone }}</p>
+									</div>
+								</div>
+							</li>
+						</ul>						
+						<hr style="height: 3px; background-color:grey; border: none;">
+						<ul>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Fournisseur:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ select_supp(complaint.supplier_id) }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Désignation du composant:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ select_article(complaint.article_id).designation }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Référence interne:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ select_article(complaint.article_id).internaltCode }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Référence externe:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ select_article(complaint.article_id).externaltCode }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Client final:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ select_client(complaint.client_id) }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Bon de livraison N°:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.deliveryForm }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Quantité Suspect:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.suspectQuantity }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Zone de détection:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.detectionZone }}</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+						<hr style="height: 3px; background-color:grey; border: none;">
+						<ul>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Description du problème:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.problemDescription }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Méthode de vérification:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.verificationMethod }}</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+						{% for attachement in attachements %}							
+							<img src="{{ url_for('static', filename='/'.join(['img', 'ComplaintAttachement', attachement.name ])) }}">
+						{% endfor %}
+						<hr style="height: 3px; background-color:grey; border: none;">
+						<ul>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Date de réponse initiale:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.initialResponseDate.strftime('%Y-%m-%d') }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Date de réponse finale:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.finalResponseDate.strftime('%Y-%m-%d') }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Délai Rapport 3D:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.date3D.strftime('%Y-%m-%d') }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Délai Rapport 5D:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.date5D.strftime('%Y-%m-%d') }}</p>
+									</div>
+								</div>
+							</li>
+							<li>
+								<div class="row">
+									<div class="col-md-5 col-5">
+										<strong class="margin-10px-left xs-margin-four-left text-purple">Délai Rapport 8D:</strong>
+									</div>
+									<div class="col-md-7 col-7">
+										<p>{{ complaint.date8D.strftime('%Y-%m-%d') }}</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+		</div>
+	</div>
+	<div class="float-right">
+		<a href="{{ url_for('comp.complaint') }}" class="btn btn-secondary btn-icon-split">
+			<span class="icon text-white-50">
+				<i class="fas fa-arrow-left"></i>
+			</span>
+			<span class="text">Retour</span>
+		</a>
+		<a href="" onclick="print_page('for_print');" class="btn btn-primary btn-icon-split">
+			<span class="icon text-white-50">
+				<i class="fas fa-print"></i>
+			</span>
+			<span class="text">Imprimer</span>
+		</a>
+	</div>
+	<!-- Logout Modal-->
+	<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title" id="reportModalLabel">Créer un rapport 8D</h5>
+			  <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">×</span>
+			  </button>
+			</div>
+			<div class="modal-body">Voulez vous lancer le rapport 8D de cette réclamation?</div>
+			<div class="modal-footer">
+			  <button class="btn btn-secondary" type="button" data-dismiss="modal">Non</button>
+			  <a class="btn btn-success" href="{{ url_for('comp.add_report8D', complaint_id=complaint.id) }}">Oui</a>
+			</div>
+		  </div>
+		</div>
+	  </div>
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+    <script language="JavaScript">
+		function print_page(obj) {
+			var prtContent = document.getElementById(obj);
+			var WinPrint = window.open('', '', 'left=0,top=0,width=8000,height=9000,toolbar=0,scrollbars=0,status=0');
+			WinPrint.document.write('<html><head>');
+			WinPrint.document.write('<link href="{{ url_for("static", filename="vendor/fontawesome-free/css/all.min.css") }}" rel="stylesheet" type="text/css">');
+			WinPrint.document.write('<link href="{{ url_for("static", filename="css/fonts.googleapis.css") }}" rel="stylesheet">');
+			WinPrint.document.write('<link href="{{ url_for("static", filename="css/style.min.css") }}" rel="stylesheet">');
+			WinPrint.document.write('</head><body>');
+			WinPrint.document.write(prtContent.innerHTML);
+			WinPrint.document.write('</body></html>');
+			WinPrint.document.close();
+			WinPrint.window.focus();
+    		WinPrint.window.print();
+			return true;
+		}
+    </script>
+{% endblock JsAfterTemplate %}

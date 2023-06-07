@@ -1,0 +1,25 @@
+{% extends "page.html" %}
+
+{% set form = myDict['form'] %} 
+
+{% block content %}
+
+		<!-- Begin Page Content -->
+        <div class="container-fluid">
+            <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Paramètres</h6>
+              </div>
+              <div class="card-body">
+                    <nav class="navbar navbar-expand navbar-light bg-light mb-4">
+                      <a class="navbar-brand" href="{{ url_for('admin.typeCertificate') }}" >Les types des certificats</a>
+                    </nav>
+                    <nav class="navbar navbar-expand navbar-light bg-light mb-4">
+                      <a class="navbar-brand" href="{{ url_for('admin.view_charges') }}" >Les frais unitaires</a>
+                    </nav>
+              </div>
+            </div>  
+        </div>
+        <!-- End of Main Content -->
+
+{% endblock content %}

@@ -1,0 +1,809 @@
+{% extends "page.html" %}
+
+{% set f1 = myDict['f1'] %}
+{% set f2 = myDict['f2'] %}
+{% set f3 = myDict['f3'] %}
+{% set f4 = myDict['f4'] %}
+{% set f5 = myDict['f5'] %}
+{% set f6 = myDict['f6'] %}
+
+{% block StyleAfterTemplate %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+	/* Table actions icons*/
+	table.table td a.view {
+		color: #03A9F4;
+	}
+
+	table.table td a.edit {
+		color: #FFC107;
+	}
+
+	table.table td a.delete {
+		color: #E34724;
+	}
+
+	table.table td i.done {
+		color: #24E334;
+	}
+
+	.hint-text {
+		float: left;
+		margin-top: 6px;
+		font-size: 95%;
+	}
+</style>
+{% endblock StyleAfterTemplate %}
+
+
+{% block content %}
+
+<!-- Begin Page Content -->
+<div class="container">
+	<div class="card shadow mb-4">
+		<div class="team-single print-container">
+			{% with messages = get_flashed_messages(with_categories=true) %}
+			{% if messages %}
+			{% for category, message in messages %}
+			<div class="alert alert-{{ category }}" role="alert">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+				{{ message }}
+			</div>
+			{% endfor %}
+			{% endif %}
+			{% endwith %}
+			<div class="card-header py-3" style="text-align: center">
+				<div class="float-left">
+					<a href="{{ url_for('main.list_report8D') }}" class="btn  btn-icon btn-md">
+						<span class="icon  text-black-50">
+							<i class="fas fa-arrow-left"></i>
+						</span>
+					</a>
+				</div>
+				<h3 class="font-size38 sm-font-size32 xs-font-size30 text-center">Rapport 8D</h3>
+			</div>
+			<div class="card-body">
+				<nav class="nav nav-tabs">
+					<a class="nav-item nav-link active" href="#p1" data-toggle="tab">D1</a>
+					<a class="nav-item nav-link" href="#p2" data-toggle="tab">D2</a>
+					<a class="nav-item nav-link" href="#p3" data-toggle="tab">D3</a>
+					<a class="nav-item nav-link" href="#p4" data-toggle="tab">D4</a>
+					<a class="nav-item nav-link" href="#p5" data-toggle="tab">D5</a>
+					<a class="nav-item nav-link" href="#p6" data-toggle="tab">D7</a>
+					<a class="nav-item nav-link" href="#p7" data-toggle="tab">D8</a>
+				</nav>
+				<div class="tab-content">
+					<div class="tab-pane fade show active" id="p1">
+						<strong class="margin-10px-left text-orange text-primary">Équipe: </strong>
+						<br>
+						<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#addteamModal">
+							<span class="icon text-white-50">
+								<i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+							</span>
+							<span class="text">Ajouter un membre</span>
+						</a>
+						<div class="table-responsive-sm mt-4">
+							<div class="row">
+								<div class="col-sm-12 col-md-6">
+									<div id="dataTable_filter" class="dataTables_filter">
+										<label>Search:<input id="myInput1" type="text"
+												class="form-control form-control-sm float-right" placeholder=""
+												aria-controls="dataTable"></label>
+									</div>
+								</div>
+							</div>
+							<table class="table table-hover " id="myTable">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col">Nom complet</th>
+										<th scope="col">Fonction</th>										
+									</tr>
+								</thead>
+								<tbody id="myTable">
+									{% for member in members %}
+									<tr>
+										<td>{{ member.firstName }} {{ member.lastName }}</td>
+										<td>{{ member.function }}</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>							
+						</div>
+						<!-- add team Modal -->
+						<div class="modal fade" id="addteamModal" tabindex="-1" role="dialog" aria-labelledby="addteamModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="addteamModalLabel">Ajouter un membre à l'équipe</h5>										
+									</div>
+									<div class="modal-body">
+										<div class="p-2">
+											<form action="{{ url_for('main.add_team', report_id=report_id) }}" method="POST"
+												enctype=multipart/form-data>
+												{{ f1.hidden_tag() }}
+												<div class="form-group row">
+													<div class="col-sm-6 mb-3 mb-sm-0">
+														{{ f1.firstName.label(class="f1-control-label") }}
+														{% if f1.firstName.errors %}
+														{{ f1.firstName(class="form-control form-control-lg is-invalid") }}
+														<div class="invalid-feedback">
+															{% for error in f1.firstName.errors %}
+															<span>{{ error }}</span>
+															{% endfor %}
+														</div>
+														{% else %}
+														{{ f1.firstName(class="form-control form-control-lg") }}
+														{% endif %}
+													</div>
+													<div class="col-sm-6">
+														{{ f1.lastName.label(class="form-control-label") }}
+														{% if f1.lastName.errors %}
+														{{ f1.lastName(class="form-control form-control-lg is-invalid") }}
+														<div class="invalid-feedback">
+															{% for error in f1.lastName.errors %}
+															<span>{{ error }}</span>
+															{% endfor %}
+														</div>
+														{% else %}
+														{{ f1.lastName(class="form-control form-control-lg") }}
+														{% endif %}
+													</div>
+												</div>
+												<div class="form-group">
+													{{ f1.function.label(class="form-control-label") }}
+													{% if f1.function.errors %}
+													{{ f1.function(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f1.function.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f1.function(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-dismiss="modal">Annuler</button>
+													{{ f1.submit(class="btn btn-success") }}
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="p2">
+						<strong class="margin-10px-left text-orange text-primary">Déscription du problème: </strong>
+						<br>
+						{% if not rapport.problemDescription %}
+							<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#problemModal">
+								<span class="icon text-white-50">
+									<i style="float: left;" class="material-icons mr-2">&#xE254;</i>
+								</span>
+								<span class="text">Décrire le problème</span>
+							</a>
+						{% else %}
+							<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#problemModal">
+								<span class="icon text-white-50">
+									<i style="float: left;" class="material-icons mr-2">&#xE254;</i>
+								</span>
+								<span class="text">Modifier la description</span>
+							</a>
+						{% endif %}
+						<br>
+						<div class="p-4">
+							<div class="card mb-4">							
+								<div class="card-body">
+									{{ rapport.problemDescription }}
+								</div>
+							</div>
+						</div>
+						{% for attachement in attachements %}							
+							<img src="{{ url_for('static', filename='/'.join(['img', 'Attachement8D', attachement.name ])) }}">
+						{% endfor %}
+						<!-- problem Modal -->
+						<div class="modal fade" id="problemModal" tabindex="-1" role="dialog" aria-labelledby="problemModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="problemModalLabel">Décrire le problème</h5>										
+									</div>
+									<div class="modal-body">
+										<div class="p-2">
+											<form action="{{ url_for('main.descripe_prob', report_id=report_id) }}" method="POST"
+												enctype=multipart/form-data>
+												{{ f2.hidden_tag() }}
+												<div class="form-group">
+													{{ f2.problem.label(class="form-control-label") }}
+													{% if f2.problem.errors %}
+													{{ f2.problem(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f2.problem.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f2.problem(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="form-group">
+													{{ f2.file.label(class="form-control-label") }}
+													{% if f2.file.errors %}
+													{{ f2.file(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+													  {% for error in f2.file.errors %}
+													  <span>{{ error }}</span>
+													  {% endfor %}
+													</div>
+													{% else %}
+													{{ f2.file(class="form-control form-control-lg", multiple="multiple") }}
+													{% endif %}
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-dismiss="modal">Annuler</button>
+													{{ f2.submit(class="btn btn-success") }}
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="p3">
+						<strong class="margin-10px-left text-orange text-primary">Actions immédiates: </strong>
+						<br>
+						<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#add3DModal">
+							<span class="icon text-white-50">
+								<i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+							</span>
+							<span class="text">Ajouter une action</span>
+						</a>
+						<div class="table-responsive-sm mt-4">
+							<div class="row">
+								<div class="col-sm-12 col-md-6">
+									<div id="dataTable_filter" class="dataTables_filter">
+										<label>Search:<input id="myInput2" type="text"
+												class="form-control form-control-sm float-right" placeholder=""
+												aria-controls="dataTable"></label>
+									</div>
+								</div>
+							</div>
+							<table class="table table-hover " id="myTable">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col">Action</th>
+										<th scope="col">Responsable</th>
+										<th scope="col">Date</th>
+										<th scope="col">Fini</th>					
+									</tr>
+								</thead>
+								<tbody id="myTable">
+									{% for action in actions %}
+									{% if action.type == "3D" %}
+									<tr>
+										<td>{{ action.description }}</td>
+										<td>{{ action.owner }}</td>
+										<td>{{ action.date.strftime('%Y-%m-%d') }}</td>
+										{% if not action.done %}
+										<td>											
+											En cours...
+										</td>
+										{% else %}
+										<td>
+											<div><i class="material-icons done">&#xE876;</i></div>
+										</td>
+										{% endif %}
+									</tr>
+									{% endif %}
+									{% endfor %}
+								</tbody>
+							</table>
+							<br>
+							<a href="" class="btn btn-primary btn float-right" data-toggle="modal" data-target="#gen3DModal">
+								<span class="icon text-white-50">
+									<i style="float: left;" class="material-icons mr-2">&#xE24D;</i>
+								</span>
+								<span class="text">Générer Rapport 3D</span>
+							</a>							
+						</div>
+						<!-- 3D Modal -->
+						<div class="modal fade" id="gen3DModal" tabindex="-1" role="dialog" aria-labelledby="gen3DModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+								<h5 class="modal-title" id="gen3DModalLabel">Voulez-vous générer le rapport 3D lié à cette réclamation ?</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								</div>
+								<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+								<form action="{{ url_for('main.generate_report', report_id=report_id, stat='3D') }}" method="POST">
+									<input class="btn btn-success" type="submit" value="Oui">
+								</form>
+								</div>
+							</div>
+							</div>
+						</div>
+						<!-- add 3D action Modal -->
+						<div class="modal fade" id="add3DModal" tabindex="-1" role="dialog" aria-labelledby="add3DModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="add3DModalLabel">Ajouter une action immédiate</h5>										
+									</div>
+									<div class="modal-body">
+										<div class="p-2">
+											<form action="{{ url_for('main.add_action', report_id=report_id, type='3D') }}" method="POST" enctype=multipart/form-data>
+												{{ f3.hidden_tag() }}
+												<div class="form-group">
+													{{ f3.action.label(class="form-control-label") }}
+													{% if f3.action.errors %}
+													{{ f3.action(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f3.action.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f3.action(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="form-group">
+													{{ f3.owner.label(class="form-control-label") }}
+													{% if f3.owner.errors %}
+													{{ f3.owner(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f3.owner.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f3.owner(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-dismiss="modal">Annuler</button>
+													{{ f3.submit(class="btn btn-success") }}
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>						
+					</div>
+					<div class="tab-pane fade" id="p4">
+						<strong class="margin-10px-left text-orange text-primary">Causes Racines: </strong>
+						<br>
+						<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#add4DModal">
+							<span class="icon text-white-50">
+								<i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+							</span>
+							<span class="text">Ajouter une cause racine</span>
+						</a>
+						<div class="table-responsive-sm mt-4">
+							<div class="row">
+								<div class="col-sm-12 col-md-6">
+									<div id="dataTable_filter" class="dataTables_filter">
+										<label>Search:<input id="myInput3" type="text"
+												class="form-control form-control-sm float-right" placeholder=""
+												aria-controls="dataTable"></label>
+									</div>
+								</div>
+							</div>
+							<table class="table table-hover " id="myTable">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col">Cause racine</th>
+									</tr>
+								</thead>
+								<tbody id="myTable">
+									{% for cause in causes %}
+									<tr>
+										<td>{{ cause.description }}</td>
+									</tr>
+									{% endfor %}
+								</tbody>
+							</table>
+						</div>
+						<!-- add 4D action Modal -->
+						<div class="modal fade" id="add4DModal" tabindex="-1" role="dialog" aria-labelledby="add4DModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="add4DModalLabel">Ajouter une cause racine</h5>										
+									</div>
+									<div class="modal-body">
+										<div class="p-2">
+											<form action="{{ url_for('main.add_action', report_id=report_id, type='4D') }}" method="POST" enctype=multipart/form-data>
+												{{ f4.hidden_tag() }}
+												<div class="form-group">
+													{{ f4.cause.label(class="form-control-label") }}
+													{% if f4.cause.errors %}
+													{{ f4.cause(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f4.cause.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f4.cause(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-dismiss="modal">Annuler</button>
+													{{ f4.submit(class="btn btn-success") }}
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="p5">
+						<strong class="margin-10px-left text-orange text-primary">Actions corréctives: </strong>
+						<br>
+						<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#add5DModal">
+							<span class="icon text-white-50">
+								<i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+							</span>
+							<span class="text">Ajouter une action</span>
+						</a>
+						<div class="table-responsive-sm mt-4">
+							<div class="row">
+								<div class="col-sm-12 col-md-6">
+									<div id="dataTable_filter" class="dataTables_filter">
+										<label>Search:<input id="myInput4" type="text"
+												class="form-control form-control-sm float-right" placeholder=""
+												aria-controls="dataTable"></label>
+									</div>
+								</div>
+							</div>
+							<table class="table table-hover " id="myTable">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col">Action</th>
+										<th scope="col">Type</th>
+										<th scope="col">Responsable</th>
+										<th scope="col">Date</th>
+										<th scope="col">Fini</th>					
+									</tr>
+								</thead>
+								<tbody id="myTable">
+									{% for action in actions %}
+									{% if action.type == "5D" %}
+									<tr>
+										<td>{{ action.description }}</td>
+										<td>{{ action.type5D }}</td>
+										<td>{{ action.owner }}</td>
+										<td>{{ action.date.strftime('%Y-%m-%d') }}</td>
+										{% if not action.done %}
+										<td>											
+											En cours...
+										</td>
+										{% else %}
+										<td>
+											<div><i class="material-icons done">&#xE876;</i></div>
+										</td>
+										{% endif %}
+									</tr>
+									{% endif %}
+									{% endfor %}
+								</tbody>
+							</table>
+							<br>
+							<a href="" class="btn btn-primary btn float-right" data-toggle="modal" data-target="#gen5DModal">
+								<span class="icon text-white-50">
+									<i style="float: left;" class="material-icons mr-2">&#xE24D;</i>
+								</span>
+								<span class="text">Générer Rapport 5D</span>
+							</a>
+							<!-- 5D Modal -->
+							<div class="modal fade" id="gen5DModal" tabindex="-1" role="dialog" aria-labelledby="gen5DModalLabel" aria-hidden="true">
+								<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+									<h5 class="modal-title" id="gen5DModalLabel">Voulez-vous générer le rapport 5D lié à cette réclamation ?</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+									</div>
+									<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+									<form action="{{ url_for('main.generate_report', report_id=report_id, stat='5D') }}" method="POST">
+										<input class="btn btn-success" type="submit" value="Oui">
+									</form>
+									</div>
+								</div>
+								</div>
+							</div>
+						</div>
+						<!-- add 5D action Modal -->
+						<div class="modal fade" id="add5DModal" tabindex="-1" role="dialog" aria-labelledby="add5DModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="add5DModalLabel">Ajouter une action corréctive</h5>										
+									</div>
+									<div class="modal-body">
+										<div class="p-2">
+											<form action="{{ url_for('main.add_action', report_id=report_id, type='5D') }}" method="POST" enctype=multipart/form-data>
+												{{ f5.hidden_tag() }}
+												<div class="form-group">
+													{{ f5.action.label(class="form-control-label") }}
+													{% if f5.action.errors %}
+													{{ f5.action(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f5.action.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f5.action(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="form-group">
+													{{ f5.owner.label(class="form-control-label") }}
+													{% if f5.owner.errors %}
+													{{ f5.owner(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f5.owner.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f5.owner(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="form-group row">
+													<div class="col-sm-6 mb-3 mb-sm-0">                       
+													  {{ f5.type.label(class="form-control-label") }}  
+													</div>
+													<div class="col-sm-6 mb-3 mb-sm-0">   
+													  {% if f5.type.errors %}
+														{{ f5.type(class="form-control form-control-lg is-invalid") }}
+														<div class="invalid-feedback">
+														  {% for error in f5.type.errors %}
+															<span>{{ error }}</span>
+														  {% endfor %}
+														</div>
+													  {% else %}
+														{{ f5.type(class="") }}
+													  {% endif %}
+													</div>
+												  </div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-dismiss="modal">Annuler</button>
+													{{ f5.submit(class="btn btn-success") }}
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="p6">
+						<strong class="margin-10px-left text-orange text-primary">Actions d'amélioration: </strong>
+						<br>
+						<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#add7DModal">
+							<span class="icon text-white-50">
+								<i style="float: left;" class="material-icons mr-2">&#xE147;</i>
+							</span>
+							<span class="text">Ajouter une action</span>
+						</a>
+						<div class="table-responsive-sm mt-4">
+							<div class="row">
+								<div class="col-sm-12 col-md-6">
+									<div id="dataTable_filter" class="dataTables_filter">
+										<label>Search:<input id="myInput5" type="text" class="form-control form-control-sm float-right" placeholder="" aria-controls="dataTable"></label>
+									</div>
+								</div>
+							</div>
+							<table class="table table-hover " id="myTable">
+								<thead class="thead-light">
+									<tr>
+										<th scope="col">Action</th>
+										<th scope="col">Responsable</th>
+										<th scope="col">Date</th>
+										<th scope="col">Fini</th>					
+									</tr>
+								</thead>
+								<tbody id="myTable">
+									{% for action in actions %}
+									{% if action.type == "7D" %}
+									<tr>
+										<td>{{ action.description }}</td>
+										<td>{{ action.owner }}</td>
+										<td>{{ action.date.strftime('%Y-%m-%d') }}</td>
+										{% if not action.done %}
+										<td>											
+											En cours...
+										</td>
+										{% else %}
+										<td>
+											<div><i class="material-icons done">&#xE876;</i></div>
+										</td>
+										{% endif %}
+									</tr>
+									{% endif %}
+									{% endfor %}
+								</tbody>
+							</table>
+							<br>
+							<a href="" class="btn btn-primary btn float-right" data-toggle="modal" data-target="#gen8DModal">
+								<span class="icon text-white-50">
+									<i style="float: left;" class="material-icons mr-2">&#xE24D;</i>
+								</span>
+								<span class="text">Compléter Rapport 8D</span>
+							</a>
+							<!-- 8D Modal -->
+							<div class="modal fade" id="gen8DModal" tabindex="-1" role="dialog" aria-labelledby="gen8DModalLabel" aria-hidden="true">
+								<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+									<h5 class="modal-title" id="gen8DModalLabel">Voulez-vous compléter le rapport 8D lié à cette réclamation ?</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+									</div>
+									<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+									<form action="{{ url_for('main.generate_report', report_id=report_id, stat='8D') }}" method="POST">
+										<input class="btn btn-success" type="submit" value="Oui">
+									</form>
+									</div>
+								</div>
+								</div>
+							</div>
+						</div>
+						<!-- add 7D action Modal -->
+						<div class="modal fade" id="add7DModal" tabindex="-1" role="dialog" aria-labelledby="add7DModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="add7DModalLabel">Ajouter une action d'amélioration</h5>										
+									</div>
+									<div class="modal-body">
+										<div class="p-2">
+											<form action="{{ url_for('main.add_action', report_id=report_id, type='7D') }}" method="POST" enctype=multipart/form-data>
+												{{ f6.hidden_tag() }}
+												<div class="form-group">
+													{{ f6.action.label(class="form-control-label") }}
+													{% if f6.action.errors %}
+													{{ f6.action(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f6.action.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f6.action(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="form-group">
+													{{ f6.owner.label(class="form-control-label") }}
+													{% if f6.owner.errors %}
+													{{ f6.owner(class="form-control form-control-lg is-invalid") }}
+													<div class="invalid-feedback">
+														{% for error in f6.owner.errors %}
+														<span>{{ error }}</span>
+														{% endfor %}
+													</div>
+													{% else %}
+													{{ f6.owner(class="form-control form-control-lg") }}
+													{% endif %}
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary"
+														data-dismiss="modal">Annuler</button>
+													{{ f6.submit(class="btn btn-success") }}
+												</div>
+											</form>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="p7">
+						<strong class="margin-10px-left text-orange text-primary">Clôturer: </strong>
+						<br>
+						<div class="p-4">
+							<div class="card mb-4">							
+								<div class="card-body">
+									Cette étape consiste à clôturer la réclamation après la fin de toutes les étapes précédentes avec succès
+								</div>
+							</div>						
+							<a href="" class="btn btn-success btn float-right" data-toggle="modal" data-target="#closeModal">
+								<span class="icon text-white-50">
+									<i style="float: left;" class="material-icons mr-2">&#xE876;</i>
+								</span>
+								<span class="text">Clôturer</span>
+							</a>
+						</div>
+						<!-- Close Modal -->
+						<div class="modal fade" id="closeModal" tabindex="-1" role="dialog" aria-labelledby="closeModalLabel" aria-hidden="true">
+							<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+								<h5 class="modal-title" id="closeModalLabel">en clôturant la réclamation vous n'aurez pas la possibilité de modifier son rapport 8D. <br> Continuer ?</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								</div>
+								<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+								<form action="{{ url_for('main.close_complaint', report_id=report_id) }}" method="POST">
+									<input class="btn btn-success" type="submit" value="Oui">
+								</form>
+								</div>
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- End of Main Content -->
+
+{% endblock content %}
+
+{% block JsAfterTemplate %}
+<script>
+	$(document).ready(function () {
+		$("#myInput1").on("keyup", function () {
+			var value = $(this).val().toLowerCase();
+			$("#myTable > tbody > tr").filter(function () {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+		});
+	});
+	$(document).ready(function () {
+		$("#myInput2").on("keyup", function () {
+			var value = $(this).val().toLowerCase();
+			$("#myTable > tbody > tr").filter(function () {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+		});
+	});
+	$(document).ready(function () {
+		$("#myInput3").on("keyup", function () {
+			var value = $(this).val().toLowerCase();
+			$("#myTable > tbody > tr").filter(function () {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+		});
+	});
+	$(document).ready(function () {
+		$("#myInput4").on("keyup", function () {
+			var value = $(this).val().toLowerCase();
+			$("#myTable > tbody > tr").filter(function () {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+		});
+	});
+	$(document).ready(function () {
+		$("#myInput5").on("keyup", function () {
+			var value = $(this).val().toLowerCase();
+			$("#myTable > tbody > tr").filter(function () {
+				$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+			});
+		});
+	});
+</script>
+{% endblock JsAfterTemplate %}
